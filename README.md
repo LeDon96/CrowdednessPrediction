@@ -19,3 +19,6 @@ Below are the tools stated used in this research
 - SKlearn: Machine Learning Packages
 - Pandas: Organizing data
 - Numpy: Mathematics
+
+### Link Thesis 
+- [Overleaf](https://www.overleaf.com/3825517455cpkbjdbgpwmn)
