@@ -5,3 +5,7 @@ The aim of this research is to construct a model that predicts the crowdedness a
 
 ## Link Thesis 
 - [Overleaf](https://www.overleaf.com/3825517455cpkbjdbgpwmn)
+
+## Contents
+- [Log Book](Documents/LogBook.md)
+- [Thesis Design](Documents/Thesis_Design_Crowdedness.pdf)
