@@ -7,8 +7,4 @@ The aim of this research is to construct a model that predicts the crowdedness a
 - [Overleaf](https://www.overleaf.com/3825517455cpkbjdbgpwmn)
 
 ## Contents
-- [Log Book](/Documents/Logbook.md)
-
-https://github.com/LeDon96/CrowdednessPrediction/blob/master/Documents/Logbook.md
-
-https://github.com/LeDon96/CrowdednessPrediction/blob/master/Documents/LogBook.md 
+- [Log Book](Documents/LogBook.md)
