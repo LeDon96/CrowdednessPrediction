@@ -10,4 +10,5 @@ Below are the needed libraries listed to run the Jupyter Notebooks
 - **DateTime**
     - [Documentation](https://docs.python.org/3/library/datetime.html)
 - **Sklearn**
+    - *Installation*: pip install -U scikit-learn
     - [Documentation](https://scikit-learn.org/stable/documentation.html)
