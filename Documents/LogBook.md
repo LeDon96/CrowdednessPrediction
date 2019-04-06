@@ -17,6 +17,8 @@
 | Week 12:    |17/06 - 21/06|Project Finished|
 
 ## Week 1
-**01**:
 - Literature Research
-- Data Exploration
+- Data Exploration & Preperation
+    - GVB Data
+    - CMSA Data
+    - Amsterdam Event Data
