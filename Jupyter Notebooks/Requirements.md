@@ -13,6 +13,3 @@ Below are the needed libraries listed to run the Jupyter Notebooks
     - *Installation*: pip install -U scikit-learn
     - [Documentation](https://scikit-learn.org/stable/documentation.html)
 - **re**
-- **Seaborn**
-    - *Installation*: pip install seaborn
-- **matplotlib**
