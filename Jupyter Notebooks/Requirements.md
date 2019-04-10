@@ -15,3 +15,4 @@ Below are the needed libraries listed to run the Jupyter Notebooks
 - **re**
 - **Seaborn**
     - *Installation*: pip install seaborn
+- **matplotlib**
