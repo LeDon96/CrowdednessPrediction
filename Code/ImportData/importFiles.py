@@ -1,6 +1,6 @@
 #Imports
 import json
-import pandas
+import pandas as pd
 
 def importJSON(path):
     """
@@ -18,3 +18,13 @@ def importJSON(path):
 
     #Return the JSON object
     return data
+
+def importExcel(path):
+    """
+    This function opens the excel file and returns the data as DataFrame object
+
+    - Input: path to file (including filename itself)
+    - Output: data from file as DataFrame
+    """
+
+    return pd.read_excel(path)
