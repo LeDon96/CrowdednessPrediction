@@ -14,3 +14,8 @@ Below are the needed libraries listed to run the Jupyter Notebooks
     - [Documentation](https://scikit-learn.org/stable/documentation.html)
 - **re**
 - **Scipy**
+- **yellowbrick**
+    - *Installation*: pip install yellowbrick
+    - [Documentation](https://www.scikit-yb.org/en/latest/)
+- **matplotlib**
+    - *Installation*: pip install matplotlib
