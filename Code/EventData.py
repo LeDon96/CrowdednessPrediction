@@ -3,7 +3,8 @@ import pandas as pd
 import datetime
 
 #Import modules other files
-from importFiles.py import importFile
+import importFiles as im 
+import exportFiles as ex
 
 def transformData(events):
     """
@@ -79,19 +80,6 @@ def transformData(events):
     #Convert Dict object to DataFrame and return it
     return pd.DataFrame.from_dict(events_dict, orient="index")
 
-def saveToFile(df, path):
-    """
-    Save DataFrame to CSV file.
-
-    - Input
-        - DataFrame
-        - path to desired file location
-    - Output: CSV file
-    """
-
-    #Converts DF to CSV
-    df.to_csv(path, index=False)
-
 def main():
     """
     This is the main functions that calls on the following functions
@@ -111,13 +99,13 @@ def main():
 
 
     #Import JSON file with Event data
-    events = importFile(json_events_path)
+    events = im.importFile(json_events_path)
 
     #Transform data to desired format
     event_df = transformData(events)
 
     #Convert DF to CSV
-    saveToFile(event_df, csv_path)
+    ex.exportAsCSV(event_df, csv_path)
 
 
 if __name__ == "__main__":
