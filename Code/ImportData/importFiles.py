@@ -2,7 +2,7 @@
 import json
 import pandas
 
-def importFile(path):
+def importJSON(path):
     """
     This function opens the json file and returns the data as JSON object
 
