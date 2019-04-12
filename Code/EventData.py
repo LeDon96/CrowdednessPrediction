@@ -92,7 +92,7 @@ def main():
     #Local Variables
 
     #path to Event database in JSON format
-    json_events_path = "../Data/Original/Evenementen.json"
+    json_events_path = "../../../Data_thesis/Open_Data/Evenementen.json"
     
     #path to desired location to save output events
     csv_path = "../../../Data_thesis/Full_Datasets/Events.csv"
