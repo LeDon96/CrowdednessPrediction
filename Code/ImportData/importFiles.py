@@ -28,3 +28,16 @@ def importExcel(path):
     """
 
     return pd.read_excel(path)
+
+def importCSV(path, sep=None):
+    """
+    This function opens the CSV file and returns the data as DataFrame object
+
+    - Input: path to file (including filename itself)
+    - Output: data from file as DataFrame
+    """
+
+    if sep != None:
+        return pd.read_csv(path, sep=sep)
+    else:
+        return pd.read_csv(path)
