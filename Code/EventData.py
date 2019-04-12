@@ -1,30 +1,9 @@
 #Imports
-
-#Original file is in json
-import json 
-
-#Used for operations on the data
 import pandas as pd
-
-#Used for the date component in the data
 import datetime
 
-def importFile(path):
-    """
-    This function opens the json file and returns the data as JSON object
-
-    - Input: path to file (including filename itself)
-    - Output: data from file as JSON object
-    """
-
-    #Opens the JSON file
-    with open(path) as event_data:
-
-        #Save data as JSON object
-        events = json.load(event_data)
-
-    #Return the JSON object
-    return events
+#Import modules other files
+from importFiles.py import importFile
 
 def transformData(events):
     """
