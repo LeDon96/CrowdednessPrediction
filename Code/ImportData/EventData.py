@@ -99,7 +99,7 @@ def main():
 
 
     #Import JSON file with Event data
-    events = im.importFile(json_events_path)
+    events = im.importJSON(json_events_path)
 
     #Transform data to desired format
     event_df = transformData(events)
