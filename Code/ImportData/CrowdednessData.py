@@ -21,3 +21,14 @@ def CrowdednessDF(df):
     #For the latitude number of the sensor
     df.insert(4, "SensorLatitude", 0)
 
+
+def main():
+    #Locat variables
+    path_to_crowdednessdata = '../../../../Data_thesis/CMSA/cmsa_data.xlsx'
+
+    #Import CSV file
+    crowd_df = im.importExcel(path_to_crowdednessdata)
+
+    #Transform Crowdedness df
+    crowd_df = CrowdednessDF(crowd_df)
+
