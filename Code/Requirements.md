@@ -19,7 +19,3 @@ Below are the needed libraries listed to run the Jupyter Notebooks
     - [Documentation](https://www.scikit-yb.org/en/latest/)
 - **matplotlib**
     - *Installation*: pip install matplotlib
-- **Prophet**
-    -  *Installation*: pip install fbprophet
-    - *Prerequisition*: [PyStan](https://pystan.readthedocs.io/en/latest/installation_beginner.html)
-    - [Documentation](https://facebook.github.io/prophet/)
