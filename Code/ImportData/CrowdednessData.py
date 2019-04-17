@@ -43,7 +43,7 @@ def SensorCoordinates(sensor_df, needed_sensors):
     return locations_dict
 
 
-def ImportCrowdednessData(crowd_df, locations_dict, gaww_02, gaww_03):
+def CrowdednessData(crowd_df, locations_dict, needed_sensors):
     """
     This function takes the crowdedness data from all the sensors within Amsterdam. The data from sensors that roughly measure the same place is aggregated under the 
     same sensor name and combined with the latitude and longitude of the sensor's measure area (see function SensorCoordinates). 
@@ -53,6 +53,11 @@ def ImportCrowdednessData(crowd_df, locations_dict, gaww_02, gaww_03):
         - locations_dict; Dict with the longitude and latitude of the relevant sensor (constructed in function SensorCoordinates)
         - gaww_02/gaww_03: List with alternative sensor names 
     """
+
+    #List sensors
+    gaww_02 = [2, "02R", "2R", "Oude Kennissteeg Occ wifi"]
+    gaww_03 = [3, "03R"]
+
     #Group the counts of people per hour, per date, per camera
     crowd_df = crowd_df.groupby(["richting", "datum", "uur"])[
         "SampleCount"].sum().reset_index()
@@ -61,7 +66,6 @@ def ImportCrowdednessData(crowd_df, locations_dict, gaww_02, gaww_03):
     crowd_df = crowd_df.rename(index=str, columns={"richting": "Sensor", "datum": "Date", "uur": "Hour",
                                                "SampleCount": "CrowdednessCount"})
     
-    #Insert columns for the sensor coordinates
     #For the longitude number of the sensor
     crowd_df.insert(3, "SensorLongitude", 0)
 
@@ -97,7 +101,7 @@ def ImportCrowdednessData(crowd_df, locations_dict, gaww_02, gaww_03):
     full_df = pd.DataFrame.from_dict(crowd_dict, orient="index")
 
     #Onlt save the sensors for which the coordinates are known
-    crowd_df = crowd_df[(crowd_df["Sensor"] == "GAWW-02") | (crowd_df["Sensor"] == "GAWW-03")]
+    crowd_df = crowd_df[crowd_df["Sensor"].isin(needed_sensors)]
 
     #Group the multiple different sensor data from same date and hour together
     full_df = full_df.groupby(["Sensor", "Date", "Hour", "SensorLongitude",
@@ -119,10 +123,6 @@ def main():
     #Sensors to use in Sensor Data
     needed_sensors = ["GAWW-02", "GAWW-03"]
 
-    #Different sensors within a similar area or same sensor with different names
-    gaww_02 =  [2, "02R", "2R", "Oude Kennissteeg Occ wifi"] #In the GAWW-02 area
-    gaww_03 = [3, "03R"] #In the GAWW-03 area
-
     #Path to save the file
     csv_path = '../../../../Data_thesis/Full_Datasets/Crowdedness.csv'
 
@@ -138,8 +138,7 @@ def main():
     locations_dict = SensorCoordinates(sensor_df, needed_sensors)
 
     #Transform Crowdedness df
-    full_df = ImportCrowdednessData(
-        crowd_df, locations_dict, gaww_02, gaww_03)
+    full_df = CrowdednessData(crowd_df, locations_dict, needed_sensors)
 
     #Convert DF to CSV
     ex.exportAsCSV(full_df, csv_path)
