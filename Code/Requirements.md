@@ -19,3 +19,5 @@ Below are the needed libraries listed to run the Jupyter Notebooks
     - [Documentation](https://www.scikit-yb.org/en/latest/)
 - **matplotlib**
     - *Installation*: pip install matplotlib
+- **xlrd**
+    - *Installation*: pip install xlrd
