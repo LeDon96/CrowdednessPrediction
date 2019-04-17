@@ -20,5 +20,5 @@ The aim of this research is to construct a model that predicts the crowdedness a
 - [Import Data](Code/ImportData)
     - [Import Crowdedness Data](Code/ImportData/CrowdednessData.py)
     - [Import Event Data](Code/ImportData/EventData.py)
-    - [Import File Functions](Code/ImportData/exportFiles.py)
-    - [Export Data to File Functions](Code/ImportData/importFiles.py)
+    - [Import File Functions](Code/ImportData/importFiles.py)
+    - [Export Data to File Functions](Code/ImportData/exportFiles.py)
