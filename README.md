@@ -11,5 +11,5 @@ The aim of this research is to construct a model that predicts the crowdedness a
 - [Thesis Design](Documents/Thesis_Design_Crowdedness.pdf)
 
 ## Code
-- [Requirements running Jupyter code](Jupyter%20Notebooks/Requirements.md)
+- [Requirements running Jupyter code](Code/Requirements.md)
 - [Jupyter Code](Jupyter%20Notebooks)
