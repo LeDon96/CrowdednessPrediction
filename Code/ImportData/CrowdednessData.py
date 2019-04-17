@@ -7,6 +7,16 @@ import exportFiles as ex
 
 
 def SensorCoordinates(sensor_df, needed_sensors):
+    """
+    This function retrieves the Longitude and Latitude of the needed Sensors and returns these. 
+
+    Input:
+        - Sensor_df: DF with longitude and latitude of all the sensors in Amsterdam
+        - needed_sensor (hyperparameter): List with all the sensors from which the location must be retrieved
+
+    Output:
+        - Dict file as follows --> SensorName = {"Longitude": <longitude>, "Latitude": <latitude>}
+    """
 
     #Dict to saved the needed locations in
     locations_dict = {}
@@ -34,6 +44,15 @@ def SensorCoordinates(sensor_df, needed_sensors):
 
 
 def ImportCrowdednessData(crowd_df, locations_dict, gaww_02, gaww_03):
+    """
+    This function takes the crowdedness data from all the sensors within Amsterdam. The data from sensors that roughly measure the same place is aggregated under the 
+    same sensor name and combined with the latitude and longitude of the sensor's measure area (see function SensorCoordinates). 
+
+    Input:
+        - crowd_df: Df with the crowdedness data of all the sensors
+        - locations_dict; Dict with the longitude and latitude of the relevant sensor (constructed in function SensorCoordinates)
+        - gaww_02/gaww_03: List with alternative sensor names 
+    """
     #Group the counts of people per hour, per date, per camera
     crowd_df = crowd_df.groupby(["richting", "datum", "uur"])[
         "SampleCount"].sum().reset_index()
