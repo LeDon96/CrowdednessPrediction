@@ -7,15 +7,16 @@ import re
 import importFiles as im
 import exportFiles as ex
 
-def arrivalData(arr_df, stations):
+def stationData(arr_df, dep_df, stations):
 
     #Dict to temp save DF's in
-    stations_dict = {}
+    arr_dict = {}
+    dep_dict = {}
 
-    #Rename 'AantalReizen' column
-    arr_df = arr_df.rename(index=str, columns={"AantalReizen": "NumberOfArrivals", "Datum": "Date",
-                                            "UurgroepOmschrijving (van aankomst)": "Hour",
-                                            "AankomstLat": "AankomstLon", "AankomstLon": "AankomstLat"})
+    # #Rename 'AantalReizen' column
+    # arr_df = arr_df.rename(index=str, columns={"AantalReizen": "NumberOfArrivals", "Datum": "Date",
+    #                                         "UurgroepOmschrijving (van aankomst)": "Hour",
+    #                                         "AankomstLat": "AankomstLon", "AankomstLon": "AankomstLat"})
     
     #Only select station in the stations list
     arr_df = arr_df[arr_df["AankomstHalteNaam"].isin(stations)]
@@ -23,18 +24,38 @@ def arrivalData(arr_df, stations):
 
     #for station in stations, construct a custom temp df
     for station in stations:
-        temp_df = arr_df[arr_df["AankomstHalteNaam"] == station]
+        temp_arr_df = arr_df[arr_df["AankomstHalteNaam"] == station]
+        temp_dep_df = dep_df[dep_df["VertrekHalteNaam"] == station]
 
-        temp_df = temp_df.rename(index=str, columns={"AankomstHalteCode": station + " Code", "AankomstLat": station + " Lat",
-                                                        "AankomstLon": station + " Lon", "NumberOfArrivals": station + " Arrivals"}
-                                    ).reset_index()
+        temp_arr_df = temp_arr_df.rename(index=str, columns={"AankomstHalteCode": station + " Code", "AankomstLat": station + " Lon",
+                                                        "AankomstLon": station + " Lat", "AantalReizen": station + " Arrivals",
+                                                        "UurgroepOmschrijving (van aankomst)": "Hour", "Datum": "Date"}
+                                    )
 
-        temp_df = temp_df.groupby(["Date", "Hour"]).agg({station + " Code": 'first',
+        temp_dep_df = temp_dep_df.rename(
+            index=str, columns={"AantalReizen": station + " Departures", "UurgroepOmschrijving (van vertrek)": "Hour", "Datum": "Date"})
+
+        temp_arr_df = temp_arr_df.groupby(["Date", "Hour"]).agg({station + " Code": 'first',
                                                             station + " Lat": 'first',
                                                             station + " Lon": 'first',
                                                             station + " Arrivals": 'sum'}).reset_index()
 
-        stations_dict["{0}".format(station)] = temp_df
+        temp_dep_df = temp_dep_df.groupby(["Date", "Hour"]).agg(
+            {station + " Departures": 'sum'}).reset_index()
+
+        arr_dict["{0}".format(station)] = temp_arr_df
+        dep_dict["{0}".format(station)] = temp_dep_df
+
+    for i in range(len(stations)-1):
+        arr_dict[stations[i+1]] = pd.merge(arr_dict[stations[i]],
+                                           arr_dict[stations[i+1]], on=["Date", "Hour"], how="outer")
+
+        dep_dict[stations[i+1]] = pd.merge(dep_dict[stations[i]],
+                                           dep_dict[stations[i+1]], on=["Date", "Hour"], how="outer")
+
+    return arr_dict[stations[-1]], dep_dict[stations[-1]]
+
+
 
 def main():
     #Path to arrival data
@@ -49,7 +70,10 @@ def main():
     arr_df = im.importCSV(path_to_arr_data, ";")
     dep_df = im.importCSV(path_to_dep_data, ";")
 
-    arrivalData(arr_df, stations)
+    arr_df, dep_df = stationData(arr_df, dep_df, stations)
+
+    print(arr_df),
+    print(dep_df)
 
 
 if __name__ == "__main__":
