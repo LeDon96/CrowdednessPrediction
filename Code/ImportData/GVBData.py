@@ -12,11 +12,6 @@ def stationData(arr_df, dep_df, stations):
     #Dict to temp save DF's in
     arr_dict = {}
     dep_dict = {}
-
-    # #Rename 'AantalReizen' column
-    # arr_df = arr_df.rename(index=str, columns={"AantalReizen": "NumberOfArrivals", "Datum": "Date",
-    #                                         "UurgroepOmschrijving (van aankomst)": "Hour",
-    #                                         "AankomstLat": "AankomstLon", "AankomstLon": "AankomstLat"})
     
     #Only select station in the stations list
     arr_df = arr_df[arr_df["AankomstHalteNaam"].isin(stations)]
@@ -53,7 +48,8 @@ def stationData(arr_df, dep_df, stations):
         dep_dict[stations[i+1]] = pd.merge(dep_dict[stations[i]],
                                            dep_dict[stations[i+1]], on=["Date", "Hour"], how="outer")
 
-    return arr_dict[stations[-1]], dep_dict[stations[-1]]
+    return pd.merge(arr_dict[stations[-1]], dep_dict[stations[-1]],
+             on=["Date", "Hour"], how="outer")
 
 
 
@@ -70,10 +66,9 @@ def main():
     arr_df = im.importCSV(path_to_arr_data, ";")
     dep_df = im.importCSV(path_to_dep_data, ";")
 
-    arr_df, dep_df = stationData(arr_df, dep_df, stations)
+    full_df = stationData(arr_df, dep_df, stations)
 
-    print(arr_df),
-    print(dep_df)
+
 
 
 if __name__ == "__main__":
