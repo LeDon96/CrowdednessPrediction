@@ -9,6 +9,9 @@ import exportFiles as ex
 
 def stationData(arr_df, dep_df, stations):
 
+    #Latitude & Longitude Dict
+    coordinates_dict = {}
+
     #Dict to temp save DF's in
     arr_dict = {}
     dep_dict = {}
@@ -26,6 +29,10 @@ def stationData(arr_df, dep_df, stations):
                                                         "AankomstLon": station + " Lat", "AantalReizen": station + " Arrivals",
                                                         "UurgroepOmschrijving (van aankomst)": "Hour", "Datum": "Date"}
                                     )
+
+        if station not in coordinates_dict:
+            coordinates_dict[station] = {
+                "Lon": temp_arr_df[station + " Lon"].iloc[0], "Lat": temp_arr_df[station + " Lat"].iloc[0]}
 
         temp_dep_df = temp_dep_df.rename(
             index=str, columns={"AantalReizen": station + " Departures", "UurgroepOmschrijving (van vertrek)": "Hour", "Datum": "Date"})
@@ -48,9 +55,9 @@ def stationData(arr_df, dep_df, stations):
                                            dep_dict[stations[i+1]], on=["Date", "Hour"], how="outer")
 
     return pd.merge(arr_dict[stations[-1]], dep_dict[stations[-1]],
-             on=["Date", "Hour"], how="outer")
+             on=["Date", "Hour"], how="outer"), coordinates_dict
 
-def TransformData(df):
+def TransformData(df, coordinates_dict, stations):
 
     #Variables
     date_format_1 = '%d/%m/%Y %H:%M:%S'
@@ -101,6 +108,10 @@ def TransformData(df):
 
         v["Date"] = date.date()
 
+        for station in stations:
+            v[station + " Lon"] = coordinates_dict[station]["Lon"]
+            v[station + " Lat"] = coordinates_dict[station]["Lat"]
+
     return pd.DataFrame.from_dict(df_dict, orient="index")
 
 
@@ -121,9 +132,9 @@ def main():
     arr_df = im.importCSV(path_to_arr_data, ";")
     dep_df = im.importCSV(path_to_dep_data, ";")
 
-    full_df = stationData(arr_df, dep_df, stations)
+    full_df, coordinates_dict = stationData(arr_df, dep_df, stations)
 
-    full_df = TransformData(full_df)
+    full_df = TransformData(full_df, coordinates_dict, stations)
 
     ex.exportAsCSV(full_df, csv_path)
 
