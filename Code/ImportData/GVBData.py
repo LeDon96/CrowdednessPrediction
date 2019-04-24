@@ -22,7 +22,7 @@ def stationData(arr_df, dep_df, stations):
         temp_arr_df = arr_df[arr_df["AankomstHalteNaam"] == station]
         temp_dep_df = dep_df[dep_df["VertrekHalteNaam"] == station]
 
-        temp_arr_df = temp_arr_df.rename(index=str, columns={"AankomstHalteCode": station + " Code", "AankomstLat": station + " Lon",
+        temp_arr_df = temp_arr_df.rename(index=str, columns={"AankomstLat": station + " Lon",
                                                         "AankomstLon": station + " Lat", "AantalReizen": station + " Arrivals",
                                                         "UurgroepOmschrijving (van aankomst)": "Hour", "Datum": "Date"}
                                     )
@@ -30,8 +30,7 @@ def stationData(arr_df, dep_df, stations):
         temp_dep_df = temp_dep_df.rename(
             index=str, columns={"AantalReizen": station + " Departures", "UurgroepOmschrijving (van vertrek)": "Hour", "Datum": "Date"})
 
-        temp_arr_df = temp_arr_df.groupby(["Date", "Hour"]).agg({station + " Code": 'first',
-                                                            station + " Lat": 'first',
+        temp_arr_df = temp_arr_df.groupby(["Date", "Hour"]).agg({station + " Lat": 'first',
                                                             station + " Lon": 'first',
                                                             station + " Arrivals": 'sum'}).reset_index()
 
@@ -51,6 +50,59 @@ def stationData(arr_df, dep_df, stations):
     return pd.merge(arr_dict[stations[-1]], dep_dict[stations[-1]],
              on=["Date", "Hour"], how="outer")
 
+def TransformData(df):
+
+    #Variables
+    date_format_1 = '%d/%m/%Y %H:%M:%S'
+    date_format_2 = '%m/%d/%Y %H:%M:%S'
+    
+    #Fill NaN values with 0
+    df = df.fillna(0.0)
+
+    #Add column day numbers
+    df["weekday"] = 99
+
+    #Add whether column to indicate whether it is weekend
+    df["is_weekend"] = 0
+
+    #Dataframe to Dict
+    df_dict = df.to_dict("index")
+
+    #Loop over dict
+    for k, v in df_dict.items():
+        #Replace time string with time blok
+        time_blok = v["Hour"][:5]
+        time_blok = re.sub('[:]', '', time_blok)
+        v["Hour"] = int(time_blok)
+
+        if v["Hour"] == 0:
+            v["Hour"] = 2400
+
+        #Remove AM/PM from string
+        v["Date"] = v["Date"][:-3]
+        try:
+            #Transform the date string to datatime.date object
+            date = pd.Timestamp.strptime(v["Date"], date_format_1)
+            #Transfrom date to weekday number
+            v["weekday"] = date.weekday()
+        except:
+            #Transform the date string to datatime.date object
+            date = pd.Timestamp.strptime(v["Date"], date_format_2)
+
+            #Transfrom date to weekday number
+            v["weekday"] = date.weekday()
+        
+        #Transform Date string to datetime object
+        v["Date"] = date.date()
+
+        #Check if weekday is in the weekend
+        if date.weekday() == 5 or date.weekday() == 6:
+            v["is_weekend"] = 1
+
+        v["Date"] = date.date()
+
+    return pd.DataFrame.from_dict(df_dict, orient="index")
+
 
 
 def main():
@@ -63,12 +115,17 @@ def main():
     #Stations to be used
     stations = ["Nieuwmarkt", "Nieuwezijds Kolk", "Dam", "Spui"]
 
+    #Path to save the file
+    csv_path = '../../../../Data_thesis/Full_Datasets/GVBData.csv'
+
     arr_df = im.importCSV(path_to_arr_data, ";")
     dep_df = im.importCSV(path_to_dep_data, ";")
 
     full_df = stationData(arr_df, dep_df, stations)
 
+    full_df = TransformData(full_df)
 
+    ex.exportAsCSV(full_df, csv_path)
 
 
 if __name__ == "__main__":
