@@ -97,6 +97,9 @@ def CrowdednessData(crowd_df, locations_dict, needed_sensors):
         #Mulitply hour with 100 (Same structure as the other files)
         v["Hour"] *= 100
 
+        if v["Hour"] == 0:
+            v["Hour"] = 2400
+
     #Return from Dict
     full_df = pd.DataFrame.from_dict(crowd_dict, orient="index")
 
