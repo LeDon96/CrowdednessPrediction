@@ -9,3 +9,16 @@ The aim of this research is to construct a model that predicts the crowdedness a
 ## Contents
 - [Log Book](Documents/LogBook.md)
 - [Thesis Design](Documents/Thesis_Design_Crowdedness.pdf)
+
+## Code
+- [Requirements running code](Code/Requirements.md)
+
+### Jupyter Test code
+- [Jupyter Code](Jupyter%20Notebooks)
+
+### Production Code
+- [Import Data](Code/ImportData)
+    - [Import Crowdedness Data](Code/ImportData/CrowdednessData.py)
+    - [Import Event Data](Code/ImportData/EventData.py)
+    - [Import File Functions](Code/ImportData/importFiles.py)
+    - [Export Data to File Functions](Code/ImportData/exportFiles.py)
