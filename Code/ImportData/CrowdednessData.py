@@ -43,7 +43,7 @@ def SensorCoordinates(sensor_df, needed_sensors):
     return locations_dict
 
 
-def CrowdednessData(crowd_df, locations_dict, needed_sensors):
+def CrowdednessData(crowd_df, blip_df, locations_dict, needed_sensors):
     """
     This function takes the crowdedness data from all the sensors within Amsterdam. The data from sensors that roughly measure the same place is aggregated under the 
     same sensor name and combined with the latitude and longitude of the sensor's measure area (see function SensorCoordinates). 
@@ -53,6 +53,9 @@ def CrowdednessData(crowd_df, locations_dict, needed_sensors):
         - locations_dict; Dict with the longitude and latitude of the relevant sensor (constructed in function SensorCoordinates)
         - gaww_02/gaww_03: List with alternative sensor names 
     """
+
+    crowd_df = pd.concat([crowd_df, blip_df],
+                         sort=True).reset_index().drop(columns={"index"})
 
     #List sensors
     gaww_02 = [2, "02R", "2R", "Oude Kennissteeg Occ wifi"]
@@ -94,6 +97,38 @@ def CrowdednessData(crowd_df, locations_dict, needed_sensors):
             v["SensorLongitude"] = locations_dict["GAWW-03"]["Longitude"]
             v["SensorLatitude"] = locations_dict["GAWW-03"]["Latitude"]
 
+        elif v["Sensor"] == "GAWW-01":
+            v["SensorLongitude"] = locations_dict["GAWW-01"]["Longitude"]
+            v["SensorLatitude"] = locations_dict["GAWW-01"]["Latitude"]
+
+        elif v["Sensor"] == "GAWW-04":
+            v["SensorLongitude"] = locations_dict["GAWW-04"]["Longitude"]
+            v["SensorLatitude"] = locations_dict["GAWW-04"]["Latitude"]
+
+        elif v["Sensor"] == "GAWW-05":
+            v["SensorLongitude"] = locations_dict["GAWW-05"]["Longitude"]
+            v["SensorLatitude"] = locations_dict["GAWW-05"]["Latitude"]
+
+        elif v["Sensor"] == "GAWW-06":
+            v["SensorLongitude"] = locations_dict["GAWW-06"]["Longitude"]
+            v["SensorLatitude"] = locations_dict["GAWW-06"]["Latitude"]
+
+        elif v["Sensor"] == "GAWW-07":
+            v["SensorLongitude"] = locations_dict["GAWW-07"]["Longitude"]
+            v["SensorLatitude"] = locations_dict["GAWW-07"]["Latitude"]
+
+        elif v["Sensor"] == "GAWW-08":
+            v["SensorLongitude"] = locations_dict["GAWW-08"]["Longitude"]
+            v["SensorLatitude"] = locations_dict["GAWW-08"]["Latitude"]
+
+        elif v["Sensor"] == "GAWW-09":
+            v["SensorLongitude"] = locations_dict["GAWW-09"]["Longitude"]
+            v["SensorLatitude"] = locations_dict["GAWW-09"]["Latitude"]
+
+        elif v["Sensor"] == "GAWW-10":
+            v["SensorLongitude"] = locations_dict["GAWW-10"]["Longitude"]
+            v["SensorLatitude"] = locations_dict["GAWW-10"]["Latitude"]
+
         #Mulitply hour with 100 (Same structure as the other files)
         v["Hour"] *= 100
 
@@ -123,8 +158,12 @@ def main():
     #Path to Sensor Data
     path_to_sensorData = '../../../../Data_thesis/Open_Data/crowdedness_sensoren.csv'
 
+    #Path to Blip Data
+    path_to_blipData = "../../../Data_thesis/CMSA/BlipData.csv"
+
     #Sensors to use in Sensor Data
-    needed_sensors = ["GAWW-02", "GAWW-03"]
+    needed_sensors = ["GAWW-01", "GAWW-02", "GAWW-03", "GAWW-04", "GAWW-05", "GAWW-06", "GAWW-07", "GAWW-08", "GAWW-09",
+                      "GAWW-10"]
 
     #Path to save the file
     csv_path = '../../../../Data_thesis/Full_Datasets/Crowdedness.csv'
@@ -136,12 +175,13 @@ def main():
     #Import CSV file
     crowd_df = im.importExcel(path_to_crowdednessData)
     sensor_df = im.importCSV(path_to_sensorData, ";")
+    blip_df = im.importCSV(path_to_blipData)
 
     #Transform Sensor df
     locations_dict = SensorCoordinates(sensor_df, needed_sensors)
 
     #Transform Crowdedness df
-    full_df = CrowdednessData(crowd_df, locations_dict, needed_sensors)
+    full_df = CrowdednessData(crowd_df, blip_df, locations_dict, needed_sensors)
 
     #Convert DF to CSV
     ex.exportAsCSV(full_df, csv_path)
