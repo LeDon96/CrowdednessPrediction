@@ -3,8 +3,8 @@ import pandas as pd
 import datetime
 
 #Import modules other files
-import importFiles as im 
-import exportFiles as ex
+import ImportData.importFiles as im
+import ImportData.exportFiles as ex
 
 def transformData(events, lat_low, lat_high, lon_low, lon_high, start_date, end_date):
     """
@@ -78,7 +78,8 @@ def transformData(events, lat_low, lat_high, lon_low, lon_high, start_date, end_
     #Convert Dict object to DataFrame and return it
     return pd.DataFrame.from_dict(events_dict, orient="index")
 
-def main():
+
+def EventDF(json_events_path, lon_low, lon_high, lat_low, lat_high, start_date, end_date):
     """
     This is the main functions that calls on the following functions
 
@@ -86,40 +87,10 @@ def main():
     - transformData: Transforms imported event data to desired format
     - saveToFile: Saves the output from previous function to CSV file
     """
-
-    #Variables
-
-    #path to Event database in JSON format
-    json_events_path = "../../../../Data_thesis/Open_Data/Evenementen.json"
-    
-    #path to desired location to save output events
-    csv_path = "../../../../Data_thesis/Full_Datasets/Events.csv"
-
-    #Parameters for area to search in
-    #longitude
-    lon_low = 4.88
-    lon_high = 4.92
-
-    #Latitude
-    lat_low = 52.36
-    lat_high = 52.39
-
-    #Start date for relevant events
-    start_date = pd.Timestamp(2018, 3, 11)
-
-    #End date for relevant events
-    end_date = pd.Timestamp(2019, 4, 30)
-
-
     #Import JSON file with Event data
     events = im.importJSON(json_events_path)
 
     #Transform data to desired format
     event_df = transformData(events, lat_low, lat_high, lon_low, lon_high, start_date, end_date)
 
-    #Convert DF to CSV
-    ex.exportAsCSV(event_df, csv_path)
-
-
-if __name__ == "__main__":
-    main()
+    return event_df

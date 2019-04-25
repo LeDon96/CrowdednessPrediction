@@ -4,8 +4,8 @@ import pandas as pd
 import re
 
 #Import Functions other files
-import importFiles as im
-import exportFiles as ex
+import ImportData.importFiles as im
+import ImportData.exportFiles as ex
 
 
 def stationData(arr_df, dep_df, stations):
@@ -101,19 +101,7 @@ def TransformData(df, stations):
     return pd.DataFrame.from_dict(df_dict, orient="index")
 
 
-
-def main():
-    #Path to arrival data
-    path_to_arr_data = "../../../../Data_thesis/GVB/Datalab_Reis_Bestemming_Uur_20190402.csv"
-
-    #path to departure data
-    path_to_dep_data = "../../../../Data_thesis/GVB/Datalab_Reis_Herkomst_Uur_20190403.csv"
-
-    #Stations to be used
-    stations = ["Nieuwmarkt", "Nieuwezijds Kolk", "Dam", "Spui"]
-
-    #Path to save the file
-    csv_path = '../../../../Data_thesis/Full_Datasets/GVBData.csv'
+def GVBDF(path_to_arr_data, path_to_dep_data, stations, ):
 
     arr_df = im.importCSV(path_to_arr_data, ";")
     dep_df = im.importCSV(path_to_dep_data, ";")
@@ -122,8 +110,4 @@ def main():
 
     full_df = TransformData(full_df, stations)
 
-    ex.exportAsCSV(full_df, csv_path)
-
-
-if __name__ == "__main__":
-    main()
+    return full_df

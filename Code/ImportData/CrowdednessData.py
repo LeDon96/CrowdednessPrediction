@@ -3,8 +3,8 @@ import pandas as pd
 from sklearn.preprocessing import LabelEncoder
 
 #Import modules other files
-import importFiles as im
-import exportFiles as ex
+import ImportData.importFiles as im
+import ImportData.exportFiles as ex
 
 
 def SensorCoordinates(sensor_df, needed_sensors):
@@ -112,30 +112,8 @@ def CrowdednessData(crowd_df, blip_df, locations_dict, needed_sensors, gaww_02, 
 
     return full_df
 
-def main():
 
-    """
-    Local Variables
-    """
-    #Path to crowdedness Data
-    path_to_crowdednessData = '../../../../Data_thesis/CMSA/cmsa_data.xlsx'
-
-    #Path to Sensor Data
-    path_to_sensorData = '../../../../Data_thesis/Open_Data/crowdedness_sensoren.csv'
-
-    #Path to Blip Data
-    path_to_blipData = "../../../Data_thesis/CMSA/BlipData.csv"
-
-    #Sensors to use in Sensor Data
-    needed_sensors = ["GAWW-01", "GAWW-02", "GAWW-03", "GAWW-04", "GAWW-05", "GAWW-06", "GAWW-07", "GAWW-08", "GAWW-09",
-                      "GAWW-10"]
-
-    #Alternative names Sensors
-    gaww_02 = [2, "02R", "2R", "Oude Kennissteeg Occ wifi"]
-    gaww_03 = [3, "03R"]
-
-    #Path to save the file
-    csv_path = '../../../../Data_thesis/Full_Datasets/Crowdedness.csv'
+def CrowdednessDF(path_to_crowdednessData, path_to_sensorData, path_to_blipData, needed_sensors, gaww_02, gaww_03):
 
     """
     Call on functions
@@ -152,9 +130,4 @@ def main():
     #Transform Crowdedness df
     full_df = CrowdednessData(crowd_df, blip_df, locations_dict, needed_sensors, gaww_02, gaww_03)
 
-    #Convert DF to CSV
-    ex.exportAsCSV(full_df, csv_path)
-
-
-if __name__ == "__main__":
-    main()
+    return full_df
