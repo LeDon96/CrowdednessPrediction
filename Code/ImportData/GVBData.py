@@ -7,39 +7,28 @@ import re
 import importFiles as im
 import exportFiles as ex
 
-def stationData(arr_df, dep_df, stations):
 
-    #Latitude & Longitude Dict
-    coordinates_dict = {}
+def stationData(arr_df, dep_df, stations):
 
     #Dict to temp save DF's in
     arr_dict = {}
     dep_dict = {}
-    
-    #Only select station in the stations list
-    arr_df = arr_df[arr_df["AankomstHalteNaam"].isin(stations)]
-
 
     #for station in stations, construct a custom temp df
     for station in stations:
         temp_arr_df = arr_df[arr_df["AankomstHalteNaam"] == station]
+
+        temp_arr_df = temp_arr_df.rename(index=str, columns={"AantalReizen": station + " Arrivals",
+                                                             "UurgroepOmschrijving (van aankomst)": "Hour", "Datum": "Date"})
+
+        temp_arr_df = temp_arr_df.groupby(["Date", "Hour"]).agg(
+            {station + " Arrivals": 'sum'}).reset_index()
+
         temp_dep_df = dep_df[dep_df["VertrekHalteNaam"] == station]
 
-        temp_arr_df = temp_arr_df.rename(index=str, columns={"AankomstLat": station + " Lon",
-                                                        "AankomstLon": station + " Lat", "AantalReizen": station + " Arrivals",
-                                                        "UurgroepOmschrijving (van aankomst)": "Hour", "Datum": "Date"}
-                                    )
-
-        if station not in coordinates_dict:
-            coordinates_dict[station] = {
-                "Lon": temp_arr_df[station + " Lon"].iloc[0], "Lat": temp_arr_df[station + " Lat"].iloc[0]}
-
         temp_dep_df = temp_dep_df.rename(
-            index=str, columns={"AantalReizen": station + " Departures", "UurgroepOmschrijving (van vertrek)": "Hour", "Datum": "Date"})
-
-        temp_arr_df = temp_arr_df.groupby(["Date", "Hour"]).agg({station + " Lat": 'first',
-                                                            station + " Lon": 'first',
-                                                            station + " Arrivals": 'sum'}).reset_index()
+            index=str, columns={"AantalReizen": station + " Departures", "UurgroepOmschrijving (van vertrek)": "Hour",
+                                "Datum": "Date"})
 
         temp_dep_df = temp_dep_df.groupby(["Date", "Hour"]).agg(
             {station + " Departures": 'sum'}).reset_index()
@@ -55,14 +44,15 @@ def stationData(arr_df, dep_df, stations):
                                            dep_dict[stations[i+1]], on=["Date", "Hour"], how="outer")
 
     return pd.merge(arr_dict[stations[-1]], dep_dict[stations[-1]],
-             on=["Date", "Hour"], how="outer"), coordinates_dict
+                    on=["Date", "Hour"], how="outer")
 
-def TransformData(df, coordinates_dict, stations):
+
+def TransformData(df, stations):
 
     #Variables
     date_format_1 = '%d/%m/%Y %H:%M:%S'
     date_format_2 = '%m/%d/%Y %H:%M:%S'
-    
+
     #Fill NaN values with 0
     df = df.fillna(0.0)
 
@@ -98,7 +88,7 @@ def TransformData(df, coordinates_dict, stations):
 
             #Transfrom date to weekday number
             v["weekday"] = date.weekday()
-        
+
         #Transform Date string to datetime object
         v["Date"] = date.date()
 
@@ -107,10 +97,6 @@ def TransformData(df, coordinates_dict, stations):
             v["is_weekend"] = 1
 
         v["Date"] = date.date()
-
-        for station in stations:
-            v[station + " Lon"] = coordinates_dict[station]["Lon"]
-            v[station + " Lat"] = coordinates_dict[station]["Lat"]
 
     return pd.DataFrame.from_dict(df_dict, orient="index")
 
@@ -132,9 +118,9 @@ def main():
     arr_df = im.importCSV(path_to_arr_data, ";")
     dep_df = im.importCSV(path_to_dep_data, ";")
 
-    full_df, coordinates_dict = stationData(arr_df, dep_df, stations)
+    full_df = stationData(arr_df, dep_df, stations)
 
-    full_df = TransformData(full_df, coordinates_dict, stations)
+    full_df = TransformData(full_df, stations)
 
     ex.exportAsCSV(full_df, csv_path)
 
