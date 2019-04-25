@@ -55,9 +55,6 @@ def CrowdednessData(crowd_df, blip_df, locations_dict, needed_sensors, gaww_02, 
         - gaww_02/gaww_03: List with alternative sensor names 
     """
 
-    crowd_df = pd.concat([crowd_df, blip_df],
-                         sort=True).reset_index().drop(columns={"index"})
-
     #Group the counts of people per hour, per date, per camera
     crowd_df = crowd_df.groupby(["richting", "datum", "uur"])[
         "SampleCount"].sum().reset_index()
@@ -65,6 +62,9 @@ def CrowdednessData(crowd_df, blip_df, locations_dict, needed_sensors, gaww_02, 
     #Rename the columns
     crowd_df = crowd_df.rename(index=str, columns={"richting": "Sensor", "datum": "Date", "uur": "Hour",
                                                "SampleCount": "CrowdednessCount"})
+
+    crowd_df = pd.concat([crowd_df, blip_df],
+                         sort=True).reset_index().drop(columns={"index"})
     
     #For the longitude number of the sensor
     crowd_df.insert(3, "SensorLongitude", 0)
