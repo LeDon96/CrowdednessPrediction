@@ -23,7 +23,7 @@ def StartEndDate(df):
     #Return the earliest and latest date in Date column of given dataframe
     return df.min().Date, df.max().Date 
 
-def importData(crowd_path, gvb_path, event_path):
+def importData(crowd_df, gvb_df, event_df):
     """
     Import Data from given file location and save as DF. 
     Furhtermore, change date from string to datetime object
@@ -33,15 +33,12 @@ def importData(crowd_path, gvb_path, event_path):
     date_format = "%Y-%m-%d"
 
     #Crowdedness DF
-    crowd_df = im.importCSV(crowd_path)
     crowd_df["Date"] = DateToDatetime(crowd_df["Date"], date_format)
 
     #GVB DF
-    gvb_df = im.importCSV(gvb_path)
     gvb_df["Date"] = DateToDatetime(gvb_df["Date"], date_format)
 
     #Event Df
-    event_df = im.importCSV(event_path)
     event_df["Date"] = DateToDatetime(event_df["Date"], date_format)
 
     return crowd_df, gvb_df, event_df
@@ -102,23 +99,10 @@ def formFullDF(crowd_df, gvb_df, event_df):
     return pd.DataFrame.from_dict(time_dict, orient="index").reset_index()
 
 
-def main():
-
-    #Path to crowdedness CSV file
-    crowd_path = '../../../../Data_thesis/Full_Datasets/Crowdedness.csv'
-
-    #Path to GVB CSV file
-    gvb_path = '../../../../Data_thesis/Full_Datasets/GVBData.csv'
-
-    #Path to event CSV file
-    event_path = '../../../../Data_thesis/Full_Datasets/Events.csv'
-
-    #Path to save file
-    csv_path = '../../../../Data_thesis/Full_Datasets/Full.csv'
-
+def CombineDF(crowd_df, gvb_df, event_df):
 
     #Import the needed CSV files
-    crowd_df, gvb_df, event_df = importData(crowd_path, gvb_path, event_path)
+    crowd_df, gvb_df, event_df = importData(crowd_df, gvb_df, event_df)
 
     #Change start and end date of DF's
     gvb_df, event_df = changeStartEndDate(crowd_df, gvb_df, event_df)
@@ -126,9 +110,4 @@ def main():
     #Form full DF
     full_df = formFullDF(crowd_df, gvb_df, event_df)
 
-    #Export as CSV
-    ex.exportAsCSV(full_df, csv_path)
-
-
-if __name__ == "__main__":
-    main()
+    return full_df
