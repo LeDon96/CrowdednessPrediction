@@ -96,7 +96,7 @@ def formFullDF(crowd_df, gvb_df, event_df):
         v["hour_cos"] = np.cos(2 * np.pi * v["Hour"] / 2400)
 
     #Transform dict back to DF
-    return pd.DataFrame.from_dict(time_dict, orient="index").reset_index()
+    return pd.DataFrame.from_dict(time_dict, orient="index").reset_index().drop(columns=["index"])
 
 
 def CombineDF(crowd_df, gvb_df, event_df):
