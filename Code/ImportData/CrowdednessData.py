@@ -107,8 +107,8 @@ def CrowdednessData(crowd_df, blip_df, locations_dict, needed_sensors, gaww_02, 
     full_df = full_df.groupby(["Sensor", "Date", "Hour", "SensorLongitude",
                                  "SensorLatitude"])["CrowdednessCount"].sum().reset_index()
 
-    crowd_df['SensorLongitude'] = LabelEncoder().fit_transform(crowd_df['SensorLongitude'])
-    crowd_df['SensorLatitude'] = LabelEncoder().fit_transform(crowd_df['SensorLatitude'])
+    full_df['SensorLongitude'] = LabelEncoder().fit_transform(full_df['SensorLongitude'])
+    full_df['SensorLatitude'] = LabelEncoder().fit_transform(full_df['SensorLatitude'])
 
     return full_df
 
