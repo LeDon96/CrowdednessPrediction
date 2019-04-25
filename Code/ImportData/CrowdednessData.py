@@ -1,5 +1,6 @@
 #Imports 
 import pandas as pd
+from sklearn.preprocessing import LabelEncoder
 
 #Import modules other files
 import importFiles as im
@@ -43,7 +44,7 @@ def SensorCoordinates(sensor_df, needed_sensors):
     return locations_dict
 
 
-def CrowdednessData(crowd_df, blip_df, locations_dict, needed_sensors):
+def CrowdednessData(crowd_df, blip_df, locations_dict, needed_sensors, gaww_02, gaww_03):
     """
     This function takes the crowdedness data from all the sensors within Amsterdam. The data from sensors that roughly measure the same place is aggregated under the 
     same sensor name and combined with the latitude and longitude of the sensor's measure area (see function SensorCoordinates). 
@@ -56,10 +57,6 @@ def CrowdednessData(crowd_df, blip_df, locations_dict, needed_sensors):
 
     crowd_df = pd.concat([crowd_df, blip_df],
                          sort=True).reset_index().drop(columns={"index"})
-
-    #List sensors
-    gaww_02 = [2, "02R", "2R", "Oude Kennissteeg Occ wifi"]
-    gaww_03 = [3, "03R"]
 
     #Group the counts of people per hour, per date, per camera
     crowd_df = crowd_df.groupby(["richting", "datum", "uur"])[
@@ -85,49 +82,14 @@ def CrowdednessData(crowd_df, blip_df, locations_dict, needed_sensors):
         if v["Sensor"] in gaww_02:
             v["Sensor"] = "GAWW-02"
 
-            #Change the ccordinates of the given camera to the correct ones
-            v["SensorLongitude"] = locations_dict["GAWW-02"]["Longitude"]
-            v["SensorLatitude"] = locations_dict["GAWW-02"]["Latitude"]
-
         #Change camera name
         elif v["Sensor"] in gaww_03:
             v["Sensor"] = "GAWW-03"
 
-            #Change the ccordinates of the given camera to the correct ones
-            v["SensorLongitude"] = locations_dict["GAWW-03"]["Longitude"]
-            v["SensorLatitude"] = locations_dict["GAWW-03"]["Latitude"]
+        if v["Sensor"] in needed_sensors:
 
-        elif v["Sensor"] == "GAWW-01":
-            v["SensorLongitude"] = locations_dict["GAWW-01"]["Longitude"]
-            v["SensorLatitude"] = locations_dict["GAWW-01"]["Latitude"]
-
-        elif v["Sensor"] == "GAWW-04":
-            v["SensorLongitude"] = locations_dict["GAWW-04"]["Longitude"]
-            v["SensorLatitude"] = locations_dict["GAWW-04"]["Latitude"]
-
-        elif v["Sensor"] == "GAWW-05":
-            v["SensorLongitude"] = locations_dict["GAWW-05"]["Longitude"]
-            v["SensorLatitude"] = locations_dict["GAWW-05"]["Latitude"]
-
-        elif v["Sensor"] == "GAWW-06":
-            v["SensorLongitude"] = locations_dict["GAWW-06"]["Longitude"]
-            v["SensorLatitude"] = locations_dict["GAWW-06"]["Latitude"]
-
-        elif v["Sensor"] == "GAWW-07":
-            v["SensorLongitude"] = locations_dict["GAWW-07"]["Longitude"]
-            v["SensorLatitude"] = locations_dict["GAWW-07"]["Latitude"]
-
-        elif v["Sensor"] == "GAWW-08":
-            v["SensorLongitude"] = locations_dict["GAWW-08"]["Longitude"]
-            v["SensorLatitude"] = locations_dict["GAWW-08"]["Latitude"]
-
-        elif v["Sensor"] == "GAWW-09":
-            v["SensorLongitude"] = locations_dict["GAWW-09"]["Longitude"]
-            v["SensorLatitude"] = locations_dict["GAWW-09"]["Latitude"]
-
-        elif v["Sensor"] == "GAWW-10":
-            v["SensorLongitude"] = locations_dict["GAWW-10"]["Longitude"]
-            v["SensorLatitude"] = locations_dict["GAWW-10"]["Latitude"]
+            v["SensorLongitude"] = locations_dict[v["Sensor"]]["Longitude"]
+            v["SensorLatitude"] = locations_dict[v["Sensor"]]["Latitude"]
 
         #Mulitply hour with 100 (Same structure as the other files)
         v["Hour"] *= 100
@@ -144,6 +106,9 @@ def CrowdednessData(crowd_df, blip_df, locations_dict, needed_sensors):
     #Group the multiple different sensor data from same date and hour together
     full_df = full_df.groupby(["Sensor", "Date", "Hour", "SensorLongitude",
                                  "SensorLatitude"])["CrowdednessCount"].sum().reset_index()
+
+    crowd_df['SensorLongitude'] = LabelEncoder().fit_transform(crowd_df['SensorLongitude'])
+    crowd_df['SensorLatitude'] = LabelEncoder().fit_transform(crowd_df['SensorLatitude'])
 
     return full_df
 
@@ -165,6 +130,10 @@ def main():
     needed_sensors = ["GAWW-01", "GAWW-02", "GAWW-03", "GAWW-04", "GAWW-05", "GAWW-06", "GAWW-07", "GAWW-08", "GAWW-09",
                       "GAWW-10"]
 
+    #Alternative names Sensors
+    gaww_02 = [2, "02R", "2R", "Oude Kennissteeg Occ wifi"]
+    gaww_03 = [3, "03R"]
+
     #Path to save the file
     csv_path = '../../../../Data_thesis/Full_Datasets/Crowdedness.csv'
 
@@ -181,7 +150,7 @@ def main():
     locations_dict = SensorCoordinates(sensor_df, needed_sensors)
 
     #Transform Crowdedness df
-    full_df = CrowdednessData(crowd_df, blip_df, locations_dict, needed_sensors)
+    full_df = CrowdednessData(crowd_df, blip_df, locations_dict, needed_sensors, gaww_02, gaww_03)
 
     #Convert DF to CSV
     ex.exportAsCSV(full_df, csv_path)
