@@ -113,7 +113,7 @@ def CrowdednessData(crowd_df, blip_df, locations_dict, needed_sensors, gaww_02, 
     return full_df
 
 
-def main(path_to_crowdednessData, path_to_sensorData, path_to_blipData, needed_sensors, gaww_02, gaww_03):
+def CrowdednessDF(path_to_crowdednessData, path_to_sensorData, path_to_blipData, needed_sensors, gaww_02, gaww_03):
 
     """
     Call on functions
