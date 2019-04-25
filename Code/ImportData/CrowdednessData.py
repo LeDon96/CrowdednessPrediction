@@ -3,8 +3,8 @@ import pandas as pd
 from sklearn.preprocessing import LabelEncoder
 
 #Import modules other files
-import importFiles as im
-import exportFiles as ex
+import ImportData.importFiles as im
+import ImportData.exportFiles as ex
 
 
 def SensorCoordinates(sensor_df, needed_sensors):
