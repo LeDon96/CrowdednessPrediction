@@ -50,7 +50,7 @@ def stationData(arr_df, dep_df, stations):
 def TransformData(df, stations):
 
     #Variables
-    date_format_1 = '%d/%m/%Y %H:%M:%S'
+    date_format_1 = '%m/%d/%Y %H:%M:%S'
     date_format_2 = '%m/%d/%Y %H:%M:%S'
 
     #Fill NaN values with 0
