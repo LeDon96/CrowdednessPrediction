@@ -101,7 +101,7 @@ def CrowdednessData(crowd_df, blip_df, locations_dict, needed_sensors, gaww_02, 
     full_df = pd.DataFrame.from_dict(crowd_dict, orient="index")
 
     #Onlt save the sensors for which the coordinates are known
-    crowd_df = crowd_df[crowd_df["Sensor"].isin(needed_sensors)]
+    full_df = full_df[full_df["Sensor"].isin(needed_sensors)]
 
     #Group the multiple different sensor data from same date and hour together
     full_df = full_df.groupby(["Sensor", "Date", "Hour", "SensorLongitude",
