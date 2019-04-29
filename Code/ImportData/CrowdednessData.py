@@ -5,6 +5,7 @@ from sklearn.preprocessing import LabelEncoder
 #Import modules other files
 import ImportData.importFiles as im
 import ImportData.exportFiles as ex
+import listSensors
 
 
 def SensorCoordinates(sensor_df, needed_sensors):
@@ -109,6 +110,8 @@ def CrowdednessData(crowd_df, blip_df, locations_dict, needed_sensors, gaww_02, 
 
     full_df['SensorLongitude'] = LabelEncoder().fit_transform(full_df['SensorLongitude'])
     full_df['SensorLatitude'] = LabelEncoder().fit_transform(full_df['SensorLatitude'])
+
+    listSensors.listSensors(full_df)
 
     return full_df
 
