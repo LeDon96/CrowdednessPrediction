@@ -3,10 +3,10 @@ import pandas as pd
 import datetime
 
 #Import modules other files
-import importFiles as im 
-import exportFiles as ex
+import ImportData.importFiles as im
+import ImportData.exportFiles as ex
 
-def transformData(events):
+def transformData(events, lat_low, lat_high, lon_low, lon_high, start_date, end_date):
     """
     This function transforms the data of each each event in the following dict structure:
     - Date: A single date of the given event
@@ -27,8 +27,6 @@ def transformData(events):
     - Output: DataFrame object with all the given events, saved per the above mentioned criteria
     """
 
-    #Local variables
-
     #Dict where all the needed data from each instance will be saved
     events_dict = {}
 
@@ -42,45 +40,46 @@ def transformData(events):
         #Save all the dates of each event in a list
         dates = []
 
-        #Date is saved in two different formats in the file
+        #Set the latitude and longitude of each date of the event to a float
+        lat = float(event["location"]["latitude"].replace(",", "."))
+        lon = float(event["location"]["longitude"].replace(",", "."))
 
-        #Format one --> {'startdate': 'dd-mm-yyyy', 'enddate': 'dd-mm-yyyy'}
-        if "startdate" in event["dates"]:
+        #Check if Longitude and Latitude between specified parameters
+        if lon > lon_low and lon < lon_high and lat > lat_low and lat < lat_high:
 
-            #Append the events to the list
-            dates.append(event["dates"]["startdate"])
-            dates.append(event["dates"]["enddate"])
+            #Check if saved in format one or two
 
-        #Format two --> {'singles': ['dd-mm-yyyy',..., 'dd-mm-yyyy']}
-        elif "singles" in event["dates"]:
+            #Format one --> {'startdate': 'dd-mm-yyyy', 'enddate': 'dd-mm-yyyy'}
+            if "startdate" in event["dates"]:
 
-            #Save entire list to dates 
-            dates = event["dates"]["singles"]
+                #Append the events to the list
+                dates.append(event["dates"]["startdate"])
+                dates.append(event["dates"]["enddate"])
 
-        #Loop over each date in dates
-        for date in dates:
+            #Format two --> {'singles': ['dd-mm-yyyy',..., 'dd-mm-yyyy']}
+            elif "singles" in event["dates"]:
+
+                #Save entire list to dates
+                dates = event["dates"]["singles"]
 
             #Change type from 'str' to 'datetime'
-            date = datetime.datetime.strptime(date, "%d-%m-%Y")
-            date = date.date()
+            dates = [pd.Timestamp.strptime(date, "%d-%m-%Y") for date in dates]
 
-            #Set the latitude and longitude of each date of the event to a float
-            lat = float(event["location"]["latitude"].replace(",", "."))
-            lon = float(event["location"]["longitude"].replace(",", "."))
+            for date in dates:
+                if start_date < date < end_date:
 
+                    #Dict with all data single event
+                    event_date = {"Date": date, "is_event": 1.0}
 
-            #Save all data single instance in temp dict
-            event_date = {
-                "Date": date, "Event": event["title"], "Latitude": lat, "Longtitude": lon}
-
-            #Append temp to local dict
-            events_dict[key] = event_date
-            key += 1
+                    #Append dict to list
+                    events_dict[key] = event_date
+                    key += 1
 
     #Convert Dict object to DataFrame and return it
     return pd.DataFrame.from_dict(events_dict, orient="index")
 
-def main():
+
+def EventDF(json_events_path, lon_low, lon_high, lat_low, lat_high, start_date, end_date):
     """
     This is the main functions that calls on the following functions
 
@@ -88,25 +87,10 @@ def main():
     - transformData: Transforms imported event data to desired format
     - saveToFile: Saves the output from previous function to CSV file
     """
-
-    #Local Variables
-
-    #path to Event database in JSON format
-    json_events_path = "../../../../Data_thesis/Open_Data/Evenementen.json"
-    
-    #path to desired location to save output events
-    csv_path = "../../../../Data_thesis/Full_Datasets/Events.csv"
-
-
     #Import JSON file with Event data
     events = im.importJSON(json_events_path)
 
     #Transform data to desired format
-    event_df = transformData(events)
+    event_df = transformData(events, lat_low, lat_high, lon_low, lon_high, start_date, end_date)
 
-    #Convert DF to CSV
-    ex.exportAsCSV(event_df, csv_path)
-
-
-if __name__ == "__main__":
-    main()
+    return event_df

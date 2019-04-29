@@ -17,6 +17,21 @@
 | Week 12:    |17/06 - 21/06|Project Finished|
 
 ## Week 1
-**01**:
 - Literature Research
-- Data Exploration
+- Data Exploration & Preperation
+    - GVB Data
+    - CMSA Data
+    - Amsterdam Event Data
+
+## Week 2
+- Further refined data preperation seperate files
+- Combined files into one large DB file
+
+## Week 3
+- Implemented Model Exploration with given data
+- Generated first results
+
+## Week 4
+- Further refined Data preperation
+- Put Data preperation Models into production
+- Further refined Model Exploration
