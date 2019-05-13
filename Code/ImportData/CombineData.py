@@ -18,7 +18,7 @@ def strToTimestamp(df, format):
 
     return pd.to_datetime(df, format=format)
 
-def startEndDate(df1, df2=df1):
+def startEndDate(df1, df2):
     """
     This function returns the min date of a given df column and the max date of a given df column
 
@@ -31,7 +31,13 @@ def startEndDate(df1, df2=df1):
     Returns: Min and Max date if given column(s)
     """
 
-    return df1.min(), df2.max()
+    #if one dataframe is defined 
+    if df2 is None:
+        return df1.min(), df1.max()
+
+    #If two dataframes are defined
+    else: 
+        return df1.min(), df2.max()
 
 def importData(sensor_df, gvb_df, event_df):
     """
@@ -172,6 +178,7 @@ def constructFullDF(sensor_df, gvb_df, event_df, stations, station_scaler_filena
     - sensor_df (df): sensor data
     - gvb_df (df): gvb data
     - event_df (df): event data
+    - stations (list): all relevant stations
     - station_scaler_filename (str): where the scalar for station weights should be stored
 
     Returns: Full GVB that contains all relevant data
@@ -247,7 +254,7 @@ def constructFullDF(sensor_df, gvb_df, event_df, stations, station_scaler_filena
     return full_df
 
 
-def fullDF(sensor_df, gvb_df, event_df, station_scaler_filename):
+def fullDF(sensor_df, gvb_df, event_df, stations, station_scaler_filename):
     """
     This functions constructs the full DF by combining previously constructed DF's
 
@@ -255,6 +262,7 @@ def fullDF(sensor_df, gvb_df, event_df, station_scaler_filename):
     - sensor_df (df): sensor data
     - gvb_df (df): gvb data
     - event_df (df): event data
+    - stations (list): all relevant stations
     - station_scaler_filename (str): where the scalar for station weights should be stored
 
     Returns: Full DF with all relevant data
@@ -269,6 +277,6 @@ def fullDF(sensor_df, gvb_df, event_df, station_scaler_filename):
 
     #Form full DF
     full_df = constructFullDF(
-        sensor_df, gvb_df, event_df, station_scaler_filename)
+        sensor_df, gvb_df, event_df, stations, station_scaler_filename)
 
     return full_df
