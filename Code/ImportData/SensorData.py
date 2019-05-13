@@ -44,7 +44,7 @@ def sensorCoordinates(coor_df, needed_sensors):
     return locations_dict
 
 
-def sensorData(sensor_df, blip_df, locations_dict, needed_sensors, gaww_02, gaww_03):
+def sensorData(sensor_df, blip_df, locations_dict, needed_sensors, gaww_02, gaww_03, lon_scaler_filename, lat_scaler_filename):
     """
     This function takes all the relevant sensor date and combines this in a single DF 
 
@@ -55,6 +55,8 @@ def sensorData(sensor_df, blip_df, locations_dict, needed_sensors, gaww_02, gaww
     - needed_sensors (list): selection of given relevant sensors
     - gaww-02 (list): alternate names for the gaww-02 sensor
     - gaww-03 (list): alternate names for the gaww-03 sensor
+    - lon_scaler_filename: where the longitude scaler should be saved
+    - lat_scaler_filename: where the latitude scaler should be saved
 
     Returns: DF with all relevant sensor data
     """
@@ -141,18 +143,16 @@ def sensorData(sensor_df, blip_df, locations_dict, needed_sensors, gaww_02, gaww
     #Scale the Longitude and latitude and save the scaler for later use
     full_df["LonScaled"] = scaler.fit_transform(
         full_df["SensorLongitude"].to_numpy().reshape(-1, 1))
-    filename = "../../../Data_thesis/Models/lon_scaler.sav"
-    pickle.dump(scaler, open(filename, 'wb'))
+    pickle.dump(scaler, open(lon_scaler_filename, 'wb'))
 
     full_df["LatScaled"] = scaler.fit_transform(
         full_df["SensorLatitude"].to_numpy().reshape(-1, 1))
-    filename = "../../../Data_thesis/Models/lat_scaler.sav"
-    pickle.dump(scaler, open(filename, 'wb'))
+    pickle.dump(scaler, open(lat_scaler_filename, 'wb'))
 
     return full_df
 
 
-def crowdednessDF(path_to_sensorData, path_to_coordinateData, path_to_blipData, needed_sensors, gaww_02, gaww_03):
+def crowdednessDF(path_to_sensorData, path_to_coordinateData, path_to_blipData, needed_sensors, gaww_02, gaww_03, lon_scaler_filename, lat_scaler_filename):
 
     """
     Call on functions to construct full sensor df
@@ -164,6 +164,8 @@ def crowdednessDF(path_to_sensorData, path_to_coordinateData, path_to_blipData, 
     - needed_sensors (list): selection of given relevant sensors
     - gaww-02 (list): alternate names for the gaww-02 sensor
     - gaww-03 (list): alternate names for the gaww-03 sensor
+    - lon_scaler_filename: where the longitude scaler should be saved
+    - lat_scaler_filename: where the latitude scaler should be saved
 
     Returns: DF with all relevant Sensor data
     """
@@ -177,6 +179,7 @@ def crowdednessDF(path_to_sensorData, path_to_coordinateData, path_to_blipData, 
     locations_dict = sensorCoordinates(coor_df, needed_sensors)
 
     #Transform Crowdedness df
-    full_df = sensorData(sensor_df, blip_df, locations_dict, needed_sensors, gaww_02, gaww_03)
+    full_df = sensorData(sensor_df, blip_df, locations_dict,
+                         needed_sensors, gaww_02, gaww_03, lon_scaler_filename, lat_scaler_filename)
 
     return full_df
