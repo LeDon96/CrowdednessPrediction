@@ -9,12 +9,11 @@ def stationData(arr_df, dep_df, stations):
     This function construct the passenger GVB DF, by summing the arrivals and departures per stattion, per hour, per date. 
 
     Parameters: 
-        arr_df(csv): Arrival Df (reisdata GVB).
-        dep_df(csv): Departure DF (reisdata GVB).
-        stations(list): Which stations to include in the df.
+    - arr_df(csv): Arrival Df (reisdata GVB).
+    - dep_df(csv): Departure DF (reisdata GVB).
+    - stations(list): Which stations to include in the df.
 
-    Returns: 
-        DF with all passenger data
+    Returns: DF with all passenger data
     """
     #Variables 
 
@@ -101,17 +100,16 @@ def stationData(arr_df, dep_df, stations):
 def transformDate(df, stations):
     """
     This function transforms the date related objects in the given DF in the following ways:
-        The date is saved in a consistent format.
-        The hour is transformed to a multiple of 100 (so 01:00 becomes 100).
-        The weekday number of the date is saved.
-        Whether it's weekend is saved (no normal situation).
+    - The date is saved in a consistent format.
+    - The hour is transformed to a multiple of 100 (so 01:00 becomes 100).
+    - The weekday number of the date is saved.
+    - Whether it's weekend is saved (no normal situation).
     
     Parameters:
-        df(pandas df): The passenger DF
-        stations(list): What stations were included
+    - df(pandas df): The passenger DF
+    - stations(list): What stations were included
     
-    Returns: 
-        Fully constructed GVB DF
+    Returns: Fully constructed GVB DF
     """
 
     #Variables
@@ -182,12 +180,11 @@ def GVBDF(path_to_arr_data, path_to_dep_data, stations):
     This function constructs the full GVB dataset, by calling on all needed functions
 
     Parameters:
-        path_to_arr_data(str): Path the arrival DF
-        path_to_dep_data(str): Path to dep df
-        stations(list): which stations to included in the DF
+    - path_to_arr_data(str): Path the arrival DF
+    - path_to_dep_data(str): Path to dep df
+    - stations(list): which stations to included in the DF
 
-    Returns: 
-        Full GVB DF
+    Returns: Full GVB DF
     """
 
     #Import needed data
