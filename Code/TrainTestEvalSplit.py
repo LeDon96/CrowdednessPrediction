@@ -1,28 +1,47 @@
-#Imports
 import pandas as pd
 import numpy as np
 
-def clasCrowdednessCounts(df):
+from sklearn.model_selection import train_test_split
+
+def classCrowdednessCounts(df):
     """
-    Divide the numerical counts of crowdedness into 4 classes. These classes asre based on the quantiles taken 
+    This function divides the numerical counts of crowdedness into 4 classes. These classes asre based on the quantiles taken 
     over all the values. 
+
+    Parameters: 
+    - df (df): Where the numerical counts need to be transformed into classes
+
+    Returns: DF with transformed crowdedness classes
     """
+
+    #Variables
 
     #Quantile splits
     low_split = df["CrowdednessCount"].quantile(.25)
     mid_split = df["CrowdednessCount"].quantile(.5)
     high_split = df["CrowdednessCount"].quantile(.75)
 
+    #################################################################################
+
+    #Dataframe to dict
     clas_dict = df.to_dict("index")
 
+    #Loop over all crowdedness counts
     for k, v in clas_dict.items():
 
+        #If the crowdedness count is below the 25% quantile, class 1 is assigned
         if v["CrowdednessCount"] < low_split:
             v["CrowdednessCount"] = 1
+
+        #If the crowdedness count is above the 25% quantile and below the 50% quantile, class 2 is assigned
         elif v["CrowdednessCount"] >= low_split and v["CrowdednessCount"] < mid_split:
             v["CrowdednessCount"] = 2
+
+        #If the crowdedness count is above the 50% quantile and below the 75% quantile, class 3 is assigned
         elif v["CrowdednessCount"] >= mid_split and v["CrowdednessCount"] < high_split:
             v["CrowdednessCount"] = 3
+
+        #If the crowdedness count is above the 75% quantile, class 4 is assigned
         elif v["CrowdednessCount"] >= high_split:
             v["CrowdednessCount"] = 4
         else:
@@ -32,105 +51,59 @@ def clasCrowdednessCounts(df):
 
     return df
 
-def testSensorLat(df, sensor):
-    """
-    Select the unique label of the latitude for the given sensor and return this
-    """
-    return df[df["Sensor"] == sensor].reset_index()["SensorLatitude"][0]
-
-
 def dateSplit(df, size):
     """
-    This function splits the given df based on given dates. 
+    This function returns the dates the training and test set should be comprised of 
     
-    Input:
-        - df: DataFrame that needs to be split into train/test
-        - size: Size of the training test between 0 and 1
+    Parameters:
+    - df (df): DataFrame that needs to be split into train/test
+    - size (float): Size of the training set between 0 and 1
+
+    Returns: train and test dates
     """
 
-    dates = df["Date"].values
-    np.random.shuffle(dates)
-    split = int(dates.size * size)
+    #Find all unique dates
+    dates = df["Date"].unique()
 
-    train_dates = dates[:split]
-    test_dates = dates[split:]
+    #Split the dates into train and test
+    train_dates, eval_dates = train_test_split(
+        dates, train_size=size, test_size=1-size, random_state=42)
 
-    return train_dates, test_dates
+    return train_dates, eval_dates
 
 
-def trainTestSplit(df, size, split_date, sensor):
+def trainTestSplit(df, size, stations):
+    """
+    This function splits the given df into a train and test set, based on dates
 
-    TrainTest_df = df[df["Date"] <= split_date].reset_index().drop(
-        columns=["index", "Hour", "Sensor", "Year"])
-    test_lat = testSensorLat(df, sensor)
+    Parameters:
+    - df (df): Data that needs to be split into train and test
+    - size (float): Size of the training set
+    - stations (list): all stations present in df
+
+    Returns: x_train (df), y_train (df), x_eval (df), y_eval (df), train_dates (list)
+    """
+
+    df = df.drop(columns=["Hour", "Sensor", "Year",
+                          "SensorLongitude", "SensorLatitude"])
+
+    for station in stations:
+        df.drop(columns={station + " Lon", station + " Lat"}, inplace=True)
 
     #Split Train/Test based on dates
-    train_dates, test_dates = dateSplit(TrainTest_df, size)
+    train_dates, eval_dates = dateSplit(df, size)
 
-    train_df_reg = TrainTest_df[TrainTest_df["Date"].isin(
-        train_dates)].reset_index().drop(columns=["Date", "index"])
-    test_df_reg = TrainTest_df[TrainTest_df["Date"].isin(
-        test_dates)].reset_index().drop(columns=["index"])
+    train_df = df[df["Date"].isin(train_dates)].reset_index().drop(
+        columns=["index"])
+    eval_df = df[df["Date"].isin(eval_dates)].reset_index().drop(
+        columns=["index"])
 
     #Train
-    x_train_reg = train_df_reg.drop(["CrowdednessCount"], axis=1)
-    y_train_reg = train_df_reg["CrowdednessCount"]
+    x_train = train_df.drop(["CrowdednessCount"], axis=1)
+    y_train = train_df[["Date", "CrowdednessCount"]]
 
-    #Test
-    x_test_reg = test_df_reg.drop(["CrowdednessCount", "Date"], axis=1)
-    y_test_reg = test_df_reg["CrowdednessCount"]
+    #Evaluation
+    x_eval = eval_df.drop(["Date", "CrowdednessCount"], axis=1)
+    y_eval = eval_df["CrowdednessCount"]
 
-    test_reg_series = test_df_reg[(test_df_reg["SensorLatitude"] == test_lat) &
-                                  (test_df_reg["Date"] == test_dates[0])].reset_index()
-    x_test_reg_series = test_reg_series.drop(
-        ["CrowdednessCount", "Date", "index"], axis=1)
-    y_test_reg_series = test_reg_series["CrowdednessCount"]
-
-    feature_labels = x_train_reg.columns.values
-
-    return x_train_reg, y_train_reg, x_test_reg, y_test_reg, x_test_reg_series, y_test_reg_series, feature_labels
-
-
-def evalSplit(df, split_date, sensor, eval_start_date, eval_end_date):
-
-    Eval_df = df[df["Date"] > split_date].reset_index().drop(
-        columns=["index", "Hour", "Sensor", "Year"])
-    test_lat = testSensorLat(df, sensor)
-
-    #Timeseries
-    x_eval_reg = Eval_df.drop(["CrowdednessCount", "Date"], axis=1)
-    y_eval_reg = Eval_df["CrowdednessCount"]
-
-    #Subset timeseries
-    sub_series = Eval_df[(Eval_df["SensorLatitude"] == test_lat) &
-                         (Eval_df["Date"] >= eval_start_date) &
-                         (Eval_df["Date"] <= eval_end_date)].reset_index()
-
-    #Time series
-    x_series_reg = sub_series.drop(
-        ["Date", "CrowdednessCount", "index"], axis=1)
-    y_series_reg = sub_series["CrowdednessCount"]
-
-    return x_eval_reg, y_eval_reg, x_series_reg, y_series_reg
-
-def TrainTestEval(df, split_date, sensor, eval_start_date, eval_end_date, size, clas=False):
-
-    if clas == True:
-        df = clasCrowdednessCounts(df)
-
-        x_train, y_train, x_test, y_test, x_test_series, y_test_series, feature_labels = trainTestSplit(
-            df, size, split_date, sensor)
-
-        x_eval, y_eval, x_eval_series, y_eval_series = evalSplit(
-            df, split_date, sensor, eval_start_date, eval_end_date)
-
-        return x_train, y_train, x_test, y_test, x_test_series, y_test_series, feature_labels, x_eval, y_eval, x_eval_series, y_eval_series
-    
-    else:
-        x_train, y_train, x_test, y_test, x_test_series, y_test_series, feature_labels = trainTestSplit(
-            df, size, split_date, sensor)
-
-        x_eval, y_eval, x_eval_series, y_eval_series = evalSplit(
-            df, split_date, sensor, eval_start_date, eval_end_date)
-
-        return x_train, y_train, x_test, y_test, x_test_series, y_test_series, feature_labels, x_eval, y_eval, x_eval_series, y_eval_series
+    return x_train, y_train, x_eval, y_eval, train_dates
