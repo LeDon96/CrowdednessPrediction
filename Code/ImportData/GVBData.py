@@ -175,7 +175,7 @@ def transformDate(df, stations):
     return pd.DataFrame.from_dict(df_dict, orient="index")
 
 
-def GVBDF(path_to_arr_data, path_to_dep_data, stations):
+def gvbDF(path_to_arr_data, path_to_dep_data, stations):
     """
     This function constructs the full GVB dataset, by calling on all needed functions
 

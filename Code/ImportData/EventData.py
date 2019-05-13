@@ -79,7 +79,7 @@ def transformData(events, lat_low, lat_high, lon_low, lon_high, start_date, end_
     return pd.DataFrame.from_dict(events_dict, orient="index")
 
 
-def EventDF(json_events_path, lon_low, lon_high, lat_low, lat_high, start_date, end_date):
+def eventDF(json_events_path, lon_low, lon_high, lat_low, lat_high, start_date, end_date):
     """
     This is the main functions that constructs the full events DF, by calling the needed function
 
