@@ -1,31 +1,29 @@
 #Imports
 import pandas as pd
 import datetime
-
-#Import modules other files
-import ImportData.importFiles as im
-import ImportData.exportFiles as ex
+import json
 
 def transformData(events, lat_low, lat_high, lon_low, lon_high, start_date, end_date):
     """
-    This function transforms the data of each each event in the following dict structure:
-    - Date: A single date of the given event
-        - type: datetime 
-    - Event Name: Name of the given event
-        - type: str
-    - Latitude: Latitude of the place of the given event
-        - type: float
-    - Longitude: Longitude of the place of the given event
-        - type: float
+    This function transforms all present dates between start and end date in the following, given 
+    that the coordinatees of the event fall between the given longitude and latitude borders:
+    - Date(datetime): date
+    - is_event(float): there is an event on the given date
 
-    Keep the following in mind:
-    - Each event has multiple instance --> Each event is saved per date. So an event with 5 dates, will have 5 instances
-    - It's possible that a single date has multiple occurrences --> There is no unique ID per row
-    - It's possible that multiple different events take place at the same coordinates (longitude, latitude)
+    Parameters:
+    - events (json): dataset events 
+    - Coordinate borders:
+        - lon_low: min value longitude
+        - lon_high: max value longitude
+        - lat_low: min value Latitude
+        - lat_high: max value Latitude
+    - start_date: Start date of relevant events
+    - end_date: end date of relevant events
 
-    - Input: JSON object with events
-    - Output: DataFrame object with all the given events, saved per the above mentioned criteria
+    Returns:DF with relevant event data
     """
+
+    #Variables
 
     #Dict where all the needed data from each instance will be saved
     events_dict = {}
@@ -33,6 +31,7 @@ def transformData(events, lat_low, lat_high, lon_low, lon_high, start_date, end_
     #Key for each instance in dict
     key = 0
 
+    #################################################################################
 
     #Loop over all events
     for event in events:
@@ -65,6 +64,7 @@ def transformData(events, lat_low, lat_high, lon_low, lon_high, start_date, end_
             #Change type from 'str' to 'datetime'
             dates = [pd.Timestamp.strptime(date, "%d-%m-%Y") for date in dates]
 
+            #Save present date with confirmation that there is an event
             for date in dates:
                 if start_date < date < end_date:
 
@@ -81,14 +81,26 @@ def transformData(events, lat_low, lat_high, lon_low, lon_high, start_date, end_
 
 def EventDF(json_events_path, lon_low, lon_high, lat_low, lat_high, start_date, end_date):
     """
-    This is the main functions that calls on the following functions
+    This is the main functions that constructs the full events DF, by calling the needed function
 
-    - importFile: Imports Events Database
-    - transformData: Transforms imported event data to desired format
-    - saveToFile: Saves the output from previous function to CSV file
+    Parameters:
+    - json_events_path: path to event dataset
+    - Coordinate borders:
+        - lon_low: min value longitude
+        - lon_high: max value longitude
+        - lat_low: min value Latitude
+        - lat_high: max value Latitude
+    - start_date: Start date of relevant events
+    - end_date: end date of relevant events
+
+    Returns: Event DF
     """
+
     #Import JSON file with Event data
-    events = im.importJSON(json_events_path)
+    with open(json_events_path) as file_data:
+
+        #Save data as JSON object
+        events = json.load(file_data)
 
     #Transform data to desired format
     event_df = transformData(events, lat_low, lat_high, lon_low, lon_high, start_date, end_date)
