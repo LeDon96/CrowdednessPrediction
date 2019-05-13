@@ -152,7 +152,7 @@ def sensorData(sensor_df, blip_df, locations_dict, needed_sensors, gaww_02, gaww
     return full_df
 
 
-def crowdednessDF(path_to_sensorData, path_to_coordinateData, path_to_blipData, needed_sensors, gaww_02, gaww_03, lon_scaler_filename, lat_scaler_filename):
+def sensorDF(path_to_sensorData, path_to_coordinateData, path_to_blipData, needed_sensors, gaww_02, gaww_03, lon_scaler_filename, lat_scaler_filename):
 
     """
     Call on functions to construct full sensor df
