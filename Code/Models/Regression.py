@@ -31,7 +31,7 @@ def hyperParameter(x_train, y_train, score, model, cycles, **params):
 
     return model_model.best_params_, model_model.best_score_
 
-def trainModel(x_train, y_train, train_dates, kf, model, params):
+def trainModel(x_train, y_train, train_dates, kf, model, params, model_name):
     """
     This function trains and tests the model k times, by splitting the data k times
 
@@ -48,7 +48,12 @@ def trainModel(x_train, y_train, train_dates, kf, model, params):
     - Mean RMSE score of all k splits
     """
 
-    model.set_params(**params)
+    if model_name != "lr":
+        params["random_state"] = 42
+        params["n_jobs"] = 4
+        model.set_params(**params)
+    else:
+        model.set_params(**params)
 
     mean_score = 0
     mean_rmse = 0
@@ -132,7 +137,7 @@ def modelConstruction(model_dir, model_name, model, x_train, y_train, x_eval, y_
     results_dict["Model Parameters"] = best_params
 
     train_score, train_rmse, model = trainModel(
-        x_train, y_train, train_dates, kf, model, best_params)
+        x_train, y_train, train_dates, kf, model, best_params, model_name)
     results_dict["Train R2 Score"] = train_score
     results_dict["Train RMSE Score"] = train_rmse
 

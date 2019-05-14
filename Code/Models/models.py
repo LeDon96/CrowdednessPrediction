@@ -26,9 +26,7 @@ def regressionModels(full_df, size, stations, model_dir, kf):
     lr = LinearRegression()
     params = {"fit_intercept": [True, False],
               "normalize": [True, False],
-              "copy_X": [True, False], 
-              "random_state": 42,
-              "n_jobs": 4}
+              "copy_X": [True, False]}
 
     model_name = "lr"
 
@@ -41,9 +39,7 @@ def regressionModels(full_df, size, stations, model_dir, kf):
     params = {"n_estimators": list(range(300, 400, 25)),
               "criterion": ["mse"],
               "max_features": ["log2", "auto", None],
-              "bootstrap": [True],
-              "random_state": 42,
-              "n_jobs": 4}
+              "bootstrap": [True]}
 
     model_name = "rfg"
 
@@ -56,9 +52,7 @@ def regressionModels(full_df, size, stations, model_dir, kf):
     params = {"learning_rate": list(range(0.05, 0.30, 0.05)),
               "n_estimators": list(range(100, 400,25)),
               "booster": ["gbtree"],
-              "objective": ["reg:linear", "reg:gamma", "reg:tweedie"],
-              "random_state": 42,
-              "n_jobs": 4}
+              "objective": ["reg:linear", "reg:gamma", "reg:tweedie"]}
     
     model_name = "xgbr"
 

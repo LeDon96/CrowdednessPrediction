@@ -33,9 +33,14 @@ def hyperParameter(x_train, y_train, score, model, cycles, **params):
 
     return model_model.best_params_, model_model.best_score_
 
-def trainModel(model, x_train, y_train, kf, train_dates, labels, params):
+def trainModel(model, x_train, y_train, kf, train_dates, labels, params, model_name):
 
-    model.set_params(**params)
+    if model_name != "base":
+        params["random_state"] = 42
+        params["n_jobs"] = 4
+        model.set_params(**params)
+    else:
+        model.set_params(**params)
 
     mean_acc = 0
     mean_precision = 0
@@ -146,7 +151,7 @@ def modelConstruction(model_dir, model_name, model, labels, x_train, y_train, x_
     results_dict["Model Parameters"] = best_params
 
     train_acc, train_prec, train_rec, train_f1, model = trainModel(
-        model, x_train, y_train, kf, train_dates, labels, best_params)
+        model, x_train, y_train, kf, train_dates, labels, best_params, model_name)
 
     results_dict["Train Accuracy Score"] = train_acc
     results_dict["Train Precision Score"] = train_prec
