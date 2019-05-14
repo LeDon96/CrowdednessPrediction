@@ -17,7 +17,7 @@ def regressionModels(full_df, size, stations, model_dir, kf):
     score = "r2"
     metrics_dict = {}
     visualization = True
-    cycles = 15
+    cycles = 10
 
     x_train, y_train, x_eval, y_eval, train_dates = trainTestSplit(
         full_df, size, stations)
@@ -49,7 +49,7 @@ def regressionModels(full_df, size, stations, model_dir, kf):
     #XGBoost Regressor
     xgbr = xgb.XGBRegressor()
 
-    params = {"learning_rate": list(range(0.05, 0.30, 0.05)),
+    params = {"learning_rate": [0.05, 0.1, 0.15, 0.2, 0.25],
               "n_estimators": list(range(100, 400,25)),
               "booster": ["gbtree"],
               "objective": ["reg:linear", "reg:gamma", "reg:tweedie"]}
@@ -66,7 +66,7 @@ def classificationConstruction(class_df, size, stations, kf, model_dir):
     labels = [1, 2, 3, 4]
     metrics_dict = {}
     score = "f1_weighted"
-    cycles = 15
+    cycles = 10
     visualization = True
 
     x_train, y_train, x_eval, y_eval, train_dates = trainTestSplit(
@@ -100,7 +100,7 @@ def classificationConstruction(class_df, size, stations, kf, model_dir):
     #XGBoost Classification
     xgbc = xgb.XGBClassifier()
 
-    params = {"learning_rate": list(range(0.05, 0.3, 0.05)),
+    params = {"learning_rate": [0.05, 0.1, 0.15, 0.2, 0.25],
               "n_estimators": list(range(100, 300, 25)),
               "booster": ["gbtree"],
               "objective": ["multi:softmax", "multi:softprob"]}
