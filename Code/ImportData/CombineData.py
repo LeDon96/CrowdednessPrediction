@@ -56,14 +56,13 @@ def importData(sensor_df, gvb_df, event_df):
     #Format Datetime
     date_format = "%Y-%m-%d"
 
-    #List all df's
-    df_list = [sensor_df, gvb_df, event_df]
-
     #################################################################################
 
     #Loop over all given DF's and transform str to timestamp
-    for df in df_list:
-        df["Date"] = strToTimestamp(df["Date"], date_format)
+    sensor_df["Date"] = strToTimestamp(sensor_df["Date"], date_format)
+    gvb_df["Date"] = strToTimestamp(gvb_df["Date"], date_format)
+    event_df["Date"] = strToTimestamp(event_df["Date"], date_format)
+
 
     return sensor_df, gvb_df, event_df
 
@@ -84,15 +83,17 @@ def changeStartEndDate(sensor_df, gvb_df, event_df):
     #Select start and end date
     start_date, end_date = startEndDate(sensor_df["Date"], gvb_df["Date"])
 
-    #List all df's
-    df_list = [sensor_df, gvb_df, event_df]
-
     #################################################################################
 
     #Loop over all given DF's and select rows based on start and end date
-    for df in df_list:
-        df = df[(df["Date"] >= start_date) & (
-            df["Date"] <= end_date)].reset_index().drop(columns=["index"])
+    sensor_df = sensor_df[(sensor_df["Date"] >= start_date) & (
+        sensor_df["Date"] <= end_date)].reset_index().drop(columns=["index"])
+    
+    gvb_df = gvb_df[(gvb_df["Date"] >= start_date) & (
+        gvb_df["Date"] <= end_date)].reset_index().drop(columns=["index"])
+
+    event_df = event_df[(event_df["Date"] >= start_date) & (
+        event_df["Date"] <= end_date)].reset_index().drop(columns=["index"])
 
     return sensor_df, gvb_df, event_df
 
