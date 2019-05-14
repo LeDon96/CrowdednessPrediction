@@ -1,5 +1,6 @@
 import Regression as reg
-from TrainTestSplit import trainTestSplit
+import Classification as clas
+from TrainTestSplit import trainTestSplit, classCrowdednessCounts
 import pandas as pd
 from sklearn.model_selection import KFold
 import pickle
@@ -8,6 +9,8 @@ import pickle
 from sklearn.linear_model import LinearRegression
 from sklearn.ensemble import RandomForestRegressor
 import xgboost as xgb
+from sklearn.dummy import DummyClassifier
+from sklearn.ensemble import RandomForestClassifier
 
 def regressionModels(full_df, size, stations, model_dir, kf):
 
@@ -23,7 +26,9 @@ def regressionModels(full_df, size, stations, model_dir, kf):
     lr = LinearRegression()
     params = {"fit_intercept": [True, False],
               "normalize": [True, False],
-              "copy_X": [True, False]}
+              "copy_X": [True, False], 
+              "random_state": 42,
+              "n_jobs": 4}
 
     model_name = "lr"
 
@@ -36,7 +41,9 @@ def regressionModels(full_df, size, stations, model_dir, kf):
     params = {"n_estimators": list(range(300, 400, 25)),
               "criterion": ["mse"],
               "max_features": ["log2", "auto", None],
-              "bootstrap": [True]}
+              "bootstrap": [True],
+              "random_state": 42,
+              "n_jobs": 4}
 
     model_name = "rfg"
 
@@ -46,10 +53,12 @@ def regressionModels(full_df, size, stations, model_dir, kf):
     #XGBoost Regressor
     xgbr = xgb.XGBRegressor()
 
-    params = {"learning_rate": list(range(0, 0.30, 0.05)),
+    params = {"learning_rate": list(range(0.05, 0.30, 0.05)),
               "n_estimators": list(range(100, 400,25)),
               "booster": ["gbtree"],
-              "objective": ["reg:linear", "reg:gamma", "reg:tweedie"]}
+              "objective": ["reg:linear", "reg:gamma", "reg:tweedie"],
+              "random_state": 42,
+              "n_jobs": 4}
     
     model_name = "xgbr"
 
@@ -58,10 +67,60 @@ def regressionModels(full_df, size, stations, model_dir, kf):
 
     return metrics_dict
 
-def classificationConstruction()
+def classificationConstruction(class_df, size, stations, kf, model_dir):
+
+    labels = [1, 2, 3, 4]
+    metrics_dict = {}
+    score = "f1_weighted"
+    cycles = 15
+    visualization = True
+
+    x_train, y_train, x_eval, y_eval, train_dates = trainTestSplit(
+        class_df, size, stations)
+
+    #Baseline
+    base = DummyClassifier()
+
+    params = {"strategy": ["stratified", "most_frequent", "prior", "uniform"]}
+
+    model_name = "base"
+
+    metrics_dict["Classification Baseline"] = clas.modelConstruction(
+        model_dir, model_name, base, labels, x_train, y_train, x_eval, y_eval, score, train_dates, kf, cycles, visualization, **params)
+
+    #Random Forrest Classification
+    rfc = RandomForestClassifier()
+
+    params = {"n_estimators": list(range(300, 400, 25)),
+              "criterion": ["gini", "entropy"],
+              "max_features": ["log2", "auto", None],
+              "bootstrap": [True],
+              "oob_score": [True, False],
+              "class_weight": ["balanced", "balanced_subsample", None]}
+
+    model_name = "rfc"
+
+    metrics_dict["Random Forrest Classification"] = clas.modelConstruction(
+        model_dir, model_name, rfc, labels, x_train, y_train, x_eval, y_eval, score, train_dates, kf, cycles, visualization, **params)
+
+    #XGBoost Classification
+    xgbc = xgb.XGBClassifier()
+
+    params = {"learning_rate": list(range(0.05, 0.3, 0.05)),
+              "n_estimators": list(range(100, 300, 25)),
+              "booster": ["gbtree"],
+              "objective": ["multi:softmax", "multi:softprob"]}
+
+    model_name = "xgbc"
+
+    metrics_dict["XGBoost Classification"] = clas.modelConstruction(
+        model_dir, model_name, xgbc, labels, x_train, y_train, x_eval, y_eval, score, train_dates, kf, cycles, visualization, **params)
+
+    return metrics_dict
 
 def main():
 
+    #Variables
     full_df = pd.read_csv("../../../../Data_thesis/Full_Datasets/Full.csv")
     size = 0.8
     stations = ["Nieuwmarkt", "Nieuwezijds Kolk",
@@ -69,10 +128,18 @@ def main():
     model_dir = "../../../../Data_thesis/Models/"
     kf = KFold(n_splits=10, shuffle=True, random_state=42)
 
-    regression_dict = regressionConstruction(full_df, size, stations, model_dir, kf)
+    #Regression
+    regression_dict = regressionModels(full_df, size, stations, model_dir, kf)
 
-    print(regression_dict)
+    reg_df = pd.DataFrame.from_dict(regression_dict)
+    print(reg_df)
 
+    #Classification
+    class_df = classCrowdednessCounts(full_df)
+    classification_dict = classificationConstruction(class_df, size, stations, kf, model_dir)
+
+    clas_df = pd.DataFrame.from_dict(classification_dict)
+    print(clas_df)    
 
 if __name__ == '__main__':
 	main()
