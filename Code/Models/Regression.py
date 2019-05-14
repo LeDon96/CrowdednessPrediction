@@ -2,8 +2,9 @@ from sklearn.model_selection import RandomizedSearchCV
 import numpy as np
 from sklearn.metrics import mean_squared_error
 from yellowbrick.regressor import PredictionError
+import pickle
 
-def hyperParameter(x_train, y_train, score, model, **params):
+def hyperParameter(x_train, y_train, score, model, cycles, **params):
     """
     This function fits multiple hyperparameters to find the optimal combinationf.
 
@@ -12,6 +13,7 @@ def hyperParameter(x_train, y_train, score, model, **params):
     - y_train (df): training target model
     - score (str): scoring metric used to find the best model 
     - model (model): model that needs to be evaluated
+    - cycles (int): number of iterations to test the model
     - params: dict with optimal model hyperparameters
 
     Returns:
@@ -20,7 +22,7 @@ def hyperParameter(x_train, y_train, score, model, **params):
     """
 
     #Call on the the hyper parameter fitting modle
-    hyp = RandomizedSearchCV(estimator=model, param_distributions=params, n_iter=8, scoring=score, n_jobs=4, cv=10,
+    hyp = RandomizedSearchCV(estimator=model, param_distributions=params, n_iter=cycles, scoring=score, n_jobs=4, cv=10,
                             random_state=42, refit=score)
 
     #Run hyper parameter fitting
@@ -97,3 +99,46 @@ def evalModel(model, x_eval, y_eval, visualization, x_train, y_train):
         g = visualizer.poof()
 
     return eval_model_score, np.sqrt(eval_model_mse)
+
+def modelConstruction(model_dir, model_name, model, x_train, y_train, x_eval, y_eval, score, train_dates, kf, cycles, visualization, **params):
+    """
+    This function trains a linear regression model
+
+    Parameters:
+    - model_dir (str): directory where model has to be saved
+    - model_name (str): name of the model
+    - model (model): model that needs to be evaluated
+    - x_train (df): training features model
+    - y_train (df): training target model
+    - x_eval (df): test features model
+    - y_eval (df): test target model
+    - score (str): sklearn standard scoring metric used by model
+    - train_dates (list): dates present in training model 
+    - kf (model): used to split training dates into training and test k times
+    - cycles (int): number of iterations to test the model
+    - visualization (bool): whether you want a scatter model of evaluation results
+    - params: dict with optimal model hyperparameters
+
+    Returns: Dict containing all metrics of hyperparameter, training and evaluation of the model
+    """
+
+    results_dict = {}
+
+    best_params, best_score = hyperParameter(
+        x_train, y_train, score, model, cycles, **params)
+    results_dict["Hyper R2 Score"] = best_score
+
+    train_score, train_rmse, model = trainModel(
+        x_train, y_train, train_dates, kf, model, **params)
+    results_dict["Train R2 Score"] = train_score
+    results_dict["Train RMSE Score"] = train_rmse
+
+    eval_score, eval_mse = evalModel(
+        model, x_eval, y_eval, visualization, x_train, y_train)
+    results_dict["Test R2 Score"] = eval_score
+    results_dict["Test RMSE Score"] = eval_mse
+
+    filename = "{0}{1}_model.sav".format(model_dir, model_name)
+    pickle.dump(model, open(filename, 'wb'))
+
+    return results_dict
