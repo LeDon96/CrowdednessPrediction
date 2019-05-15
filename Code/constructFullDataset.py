@@ -95,7 +95,7 @@ def main():
 
     #Converts DF to CSV
     full_df.to_csv(full_df_path, index=False)
-    average_df.to_csv(full_df_path, index=False)
+    average_df.to_csv(average_df_path, index=True)
 
 if __name__ == '__main__':
 	main()
