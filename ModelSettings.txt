@@ -1,0 +1,68 @@
+{"lr":
+    {"name": "Linear Regression",
+    "score": "r2",
+    "visualization": True,
+    "cycles": 8,
+    "params":
+        {"fit_intercept": [True, False],
+        "normalize": [True, False],
+        "copy_X": [True, False]
+        }},
+"rfg":
+    {"name": "Random Forrest Regressor",
+    "score": "r2",
+    "visualization": True,
+    "cycles": 12,
+    "params": 
+        {"n_estimators": list(range(300, 400, 25)),
+        "criterion": ["mse"],
+        "max_features": ["log2", "auto", None],
+        "bootstrap": [True]
+        }},
+"xgbr":
+    {"name": "XGBoost Regressor",
+    "score": "r2",
+    "visualization": True,
+    "cycles": 12,
+    "params": 
+        {"learning_rate": [0.05, 0.1, 0.15, 0.2, 0.25],
+        "n_estimators": list(range(100, 400,25)),
+        "booster": ["gbtree"],
+        "objective": ["reg:linear", "reg:gamma", "reg:tweedie"]
+        }},
+"dc":
+    {"name": "Dummy Classifier",
+    "score": "accuracy",
+    "visualization": True,
+    "cycles": 1,
+    "params": 
+        {"strategy": ["most_frequent"]
+        }},
+"rfc":
+    {"name": "Random Forrest Classification",
+    "score": "f1_weighted",
+    "visualization": True,
+    "cycles": 1,
+    "params": 
+        {"n_estimators": list(range(300, 400, 25)),
+        "criterion": ["gini", "entropy"],
+        "max_features": ["log2", "auto", None],
+        "bootstrap": [True],
+        "oob_score": [True, False],
+        "class_weight": ["balanced", "balanced_subsample", None]
+        }},
+"xgbc":
+    {"name": "XGBoost Classification",
+    "score": "f1_weighted",
+    "visualization": True,
+    "cycles": 1,
+    "params": 
+        {"learning_rate": [0.05, 0.1, 0.15, 0.2, 0.25],
+        "n_estimators": list(range(100, 300, 25)),
+        "booster": ["gbtree"],
+        "objective": ["multi:softmax", "multi:softprob"]
+        }},
+"trainTest":
+    {"size":  0.8
+    }
+}

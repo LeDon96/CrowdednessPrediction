@@ -5,6 +5,7 @@ from sklearn.metrics import accuracy_score
 from sklearn.metrics import f1_score
 from yellowbrick.classifier import ClassPredictionError
 import pickle
+import matplotlib.pyplot as plt
 
 def hyperParameter(x_train, y_train, score, model, cycles, **params):
     """
@@ -35,12 +36,12 @@ def hyperParameter(x_train, y_train, score, model, cycles, **params):
 
 def trainModel(model, x_train, y_train, kf, train_dates, labels, params, model_name):
 
-    if model_name != "base":
-        params["random_state"] = 42
-        params["n_jobs"] = 4
+    if model_name == "dc":
         model.set_params(**params)
     else:
         model.set_params(**params)
+        params["random_state"] = 42
+        params["n_jobs"] = 4
 
     mean_acc = 0
     mean_precision = 0
@@ -67,11 +68,14 @@ def trainModel(model, x_train, y_train, kf, train_dates, labels, params, model_n
 
         y_pred_model = model.predict(x_test)
 
-        mean_acc += accuracy_score(y_test, y_pred_model)
-
-        mean_precision += precision_score(y_test, y_pred_model, average=None)
-        mean_recall += recall_score(y_test, y_pred_model, average=None)
-        mean_f1_score += f1_score(y_test, y_pred_model, average=None)
+        if model_name == "dc":
+            mean_acc += accuracy_score(y_test, y_pred_model)
+        else:
+            mean_acc += accuracy_score(y_test, y_pred_model)
+            mean_precision += precision_score(y_test, y_pred_model, average=None)
+            mean_recall += recall_score(y_test, y_pred_model, average=None)
+            mean_f1_score += f1_score(y_test, y_pred_model, average=None)
+        
 
 
     mean_acc = round(((mean_acc / 10) * 100), 2)
@@ -79,14 +83,15 @@ def trainModel(model, x_train, y_train, kf, train_dates, labels, params, model_n
     mean_recall = (mean_recall / 10) * 100
     mean_f1_score = (mean_f1_score / 10) * 100
 
-    for i in range(len(labels)):
-        prec_dict["{0}".format(labels[i])] = mean_precision[i]
-        rec_dict["{0}".format(labels[i])] = mean_recall[i]
-        f1_dict["{0}".format(labels[i])] = mean_f1_score[i]
+    if model_name != "dc":
+        for i in range(len(labels)):
+            prec_dict["{0}".format(labels[i])] = mean_precision[i]
+            rec_dict["{0}".format(labels[i])] = mean_recall[i]
+            f1_dict["{0}".format(labels[i])] = mean_f1_score[i]
 
     return mean_acc, prec_dict, rec_dict, f1_dict, model
 
-def evalModel(model, x_eval, y_eval, labels, visualization, x_train, y_train):
+def evalModel(model, x_eval, y_eval, labels, visualization, plot_dir, x_train, y_train, model_name):
 
     prec_dict = {}
     rec_dict = {}
@@ -94,15 +99,18 @@ def evalModel(model, x_eval, y_eval, labels, visualization, x_train, y_train):
 
     y_pred_eval = model.predict(x_eval)
 
-    acc = accuracy_score(y_eval, y_pred_eval)
-    prec = precision_score(y_eval, y_pred_eval, average=None)
-    rec = recall_score(y_eval, y_pred_eval, average=None)
-    f1 = f1_score(y_eval, y_pred_eval, average=None)
+    if model_name == "dc":
+        acc = accuracy_score(y_eval, y_pred_eval)
+    else:
+        acc = accuracy_score(y_eval, y_pred_eval)
+        prec = precision_score(y_eval, y_pred_eval, average=None)
+        rec = recall_score(y_eval, y_pred_eval, average=None)
+        f1 = f1_score(y_eval, y_pred_eval, average=None)
 
-    for i in range(len(labels)):
-        prec_dict["{0}".format(labels[i])] = prec[i]
-        rec_dict["{0}".format(labels[i])] = rec[i]
-        f1_dict["{0}".format(labels[i])] = f1[i]
+        for i in range(len(labels)):
+            prec_dict["{0}".format(labels[i])] = prec[i]
+            rec_dict["{0}".format(labels[i])] = rec[i]
+            f1_dict["{0}".format(labels[i])] = f1[i]
 
     if visualization == True:
         visualizer = ClassPredictionError(
@@ -112,12 +120,13 @@ def evalModel(model, x_eval, y_eval, labels, visualization, x_train, y_train):
 
         visualizer.fit(x_train.drop(columns={"Date"}), y_train["CrowdednessCount"])
         visualizer.score(x_eval, y_eval)
-        g = visualizer.poof()
+        visualizer.finalize()
+        plt.savefig("{0}{1}.png".format(plot_dir, model))
 
     return acc, prec_dict, rec_dict, f1_dict
 
 
-def modelConstruction(model_dir, model_name, model, labels, x_train, y_train, x_eval, y_eval, score, train_dates, kf, cycles, visualization, **params):
+def modelConstruction(model_dir, plot_dir, model_name, model, labels, x_train, y_train, x_eval, y_eval, score, train_dates, kf, cycles, visualization, **params):
     """
     This function trains a linear regression model
 
@@ -142,9 +151,6 @@ def modelConstruction(model_dir, model_name, model, labels, x_train, y_train, x_
 
     results_dict = {}
 
-    if model_name == "base":
-        cycles = 1
-
     best_params, best_score = hyperParameter(
         x_train, y_train, score, model, cycles, **params)
     results_dict["Hyper R2 Score"] = best_score
@@ -159,7 +165,7 @@ def modelConstruction(model_dir, model_name, model, labels, x_train, y_train, x_
     results_dict["Train F1 Score"] = train_f1
 
     eval_acc, eval_prec, eval_rec, eval_f1 = evalModel(
-        model, x_eval, y_eval, labels, visualization, x_train, y_train)
+        model, x_eval, y_eval, labels, visualization, plot_dir, x_train, y_train, model_name)
     results_dict["Evaluation Accuracy Score"] = eval_acc
     results_dict["Evaluation Precision Score"] = eval_prec
     results_dict["Evaluation Recall Score"] = eval_rec
