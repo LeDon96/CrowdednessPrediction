@@ -77,6 +77,7 @@ station_scaler_filename = "../../../Data_thesis/Models/station_scaler.sav"
 
 #Where to save df
 full_df_path = "../../../Data_thesis/Full_Datasets/Full.csv"
+average_df_path = "../../../Data_thesis/Full_Datasets/AveragePassengerCounts.csv"
 
 
 def main():
@@ -84,7 +85,8 @@ def main():
     sensor_df = sd.sensorDF(path_to_sensorData, path_to_coordinateData, path_to_blipData,
                             needed_sensors, gaww_02, gaww_03, lon_scaler_filename, lat_scaler_filename)
 
-    gvb_df = gvb.gvbDF(path_to_arr_data, path_to_dep_data, stations)
+    gvb_df, average_df = gvb.gvbDF(
+        path_to_arr_data, path_to_dep_data, stations)
 
     event_df = evd.eventDF(json_events_path, lon_low,
                            lon_high, lat_low, lat_high, start_date, end_date)
@@ -93,6 +95,7 @@ def main():
 
     #Converts DF to CSV
     full_df.to_csv(full_df_path, index=False)
+    average_df.to_csv(full_df_path, index=False)
 
 if __name__ == '__main__':
 	main()

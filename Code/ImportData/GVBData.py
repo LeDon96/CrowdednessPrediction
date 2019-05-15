@@ -175,6 +175,34 @@ def transformDate(df, stations):
     return pd.DataFrame.from_dict(df_dict, orient="index")
 
 
+def averagePassengerCount(df, stations):
+
+    average_dict = {}
+
+    for station in stations:
+        temp_df = df.groupby(["weekday"]).agg({station + " Arrivals": 'mean',
+                                               station + " Departures": 'mean'})
+        temp_df["Station"] = station
+        temp_df["Passengers"] = temp_df[station +
+                                        " Departures"].astype(int) + temp_df[station + " Arrivals"].astype(int)
+
+        temp_df = temp_df.drop(
+            columns={station + " Arrivals", station + " Departures"})
+
+        average_dict["{0}".format(station)] = temp_df
+
+    for i in range(len(stations)-1):
+
+        average_dict[stations[i+1]] = pd.merge(average_dict[stations[i]],
+                                               average_dict[stations[i+1]], on=["weekday", "Passengers", "Station"], how="outer")
+
+    df = average_dict[stations[-1]]
+
+    df.sort_values(by=["weekday"], inplace=True)
+
+    return df
+
+
 def gvbDF(path_to_arr_data, path_to_dep_data, stations):
     """
     This function constructs the full GVB dataset, by calling on all needed functions
@@ -197,4 +225,6 @@ def gvbDF(path_to_arr_data, path_to_dep_data, stations):
     #Transform the date objects of the DF to a consistent format
     df = transformDate(df, stations)
 
-    return df
+    average_df = averagePassengerCount(df, stations)
+
+    return df, average_df
