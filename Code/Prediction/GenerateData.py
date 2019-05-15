@@ -149,3 +149,25 @@ def generateDates(start_date, end_date):
         dates.append(start_date + pd.Timedelta(i, unit="D"))
 
     return dates
+
+def defineCoordinates(sensors, stations, add_sensors, extra_cor, extra_lon, extra_lat, full_df):
+
+    sensor_dict = {}
+    station_dict = {}
+
+    if add_sensors == True:
+
+        for sensor in sensors:
+            if sensor != "Custom":
+                sensor_dict[sensor] = {"Longitude": full_df[full_df["Sensor"] == sensor].reset_index()["SensorLongitude"][0],
+                                       "Latitude": full_df[full_df["Sensor"] == sensor].reset_index()["SensorLatitude"][0]}
+
+    if extra_cor == True:
+        sensor_dict["Custom"] = {"Longitude": np.float64(
+            extra_lon), "Latitude": np.float64(extra_lat)}
+
+    for station in stations:
+        station_dict[station] = {
+            "Longitude": full_df[station + " Lon"][0], "Latitude": full_df[station + " Lat"][0]}
+
+    return sensor_dict, station_dict

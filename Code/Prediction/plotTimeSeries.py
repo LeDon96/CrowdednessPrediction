@@ -1,5 +1,6 @@
 from bubbly.bubbly import bubbleplot
 import plotly 
+import pandas as pd
 
 def plotTimeSeries(df, date):
 
@@ -20,5 +21,5 @@ def plotTimeSeries(df, date):
                         x_logscale=False, scale_bubble=3, height=650, x_range=[min(df[x_column])-0.001, max(df[x_column])+0.001],
                         y_range=[min(df[y_column])-0.001, max(df[y_column])+0.001])
 
-    plotly.offline.plot(figure, filename="../../../Data_thesis/Full_Datasets/Plots/{0}_plot.html".format(str_date),
+    plotly.offline.plot(figure, filename="../../../../Data_thesis/Full_Datasets/Plots/{0}_plot.html".format(str_date),
                         auto_open=False)
