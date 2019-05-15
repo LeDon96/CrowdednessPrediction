@@ -1,0 +1,26 @@
+{"needed_sensors": [
+        "GAWW-01",
+        "GAWW-02",
+        "GAWW-03",
+        "GAWW-04",
+        "GAWW-05",
+        "GAWW-06",
+        "GAWW-07"
+    ],
+    "gaww-02": [
+        2,
+        "02R",
+        "2R",
+        "Oude Kennissteeg Occ wifi"
+    ], 
+    "gaww-03": [
+        3,
+        "03R"
+    ],
+    "stations": [
+        "Nieuwmarkt",
+        "Nieuwezijds Kolk",
+        "Dam",
+        "Spui",
+        "Centraal Station"
+    ]}
