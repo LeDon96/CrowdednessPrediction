@@ -121,19 +121,21 @@ def main():
                 "Dam", "Spui", "Centraal Station"]
     model_dir = "../../../../Data_thesis/Models/"
     kf = KFold(n_splits=10, shuffle=True, random_state=42)
+    reg_df_path = "../../../../Data_thesis/Full_Datasets/RegModelResults.csv"
+    clas_df_path = "../../../../Data_thesis/Full_Datasets/ClasModelResults.csv"
+
 
     #Regression
     regression_dict = regressionModels(full_df, size, stations, model_dir, kf)
-
-    reg_df = pd.DataFrame.from_dict(regression_dict)
-    print(reg_df)
+    reg_df = pd.DataFrame.from_dict(regression_dict, orient="index")
+    reg_df.to_csv(reg_df_path, index=True)
 
     #Classification
     class_df = classCrowdednessCounts(full_df)
     classification_dict = classificationConstruction(class_df, size, stations, kf, model_dir)
+    clas_df = pd.DataFrame.from_dict(classification_dict, orient="index")  
+    clas_df.to_csv(clas_df_path, index=True)
 
-    clas_df = pd.DataFrame.from_dict(classification_dict)
-    print(clas_df)    
 
 if __name__ == '__main__':
 	main()
