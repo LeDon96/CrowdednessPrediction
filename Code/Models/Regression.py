@@ -3,6 +3,7 @@ import numpy as np
 from sklearn.metrics import mean_squared_error
 from yellowbrick.regressor import PredictionError
 import pickle
+import matplotlib.pyplot as plt
 
 def hyperParameter(x_train, y_train, score, model, cycles, **params):
     """
@@ -76,7 +77,7 @@ def trainModel(x_train, y_train, train_dates, kf, model, params, model_name):
     return mean_score, mean_rmse, model
 
 
-def evalModel(model, x_eval, y_eval, visualization, x_train, y_train):
+def evalModel(model, x_eval, y_eval, visualization, plot_dir, x_train, y_train):
     """
     This function evaluates the trained model on unseen data
 
@@ -103,11 +104,12 @@ def evalModel(model, x_eval, y_eval, visualization, x_train, y_train):
         # Fit the training data to the visualizer
         visualizer.fit(x_train.drop(columns={"Date"}), y_train["CrowdednessCount"])
         visualizer.score(x_eval, y_eval)  # Evaluate the model on the test data
-        g = visualizer.poof()
+        visualizer.finalize()
+        plt.savefig("{0}{1}.png".format(plot_dir, model))
 
     return eval_model_score, np.sqrt(eval_model_mse)
 
-def modelConstruction(model_dir, model_name, model, x_train, y_train, x_eval, y_eval, score, train_dates, kf, cycles, visualization, **params):
+def modelConstruction(model_dir, plot_dir, model_name, model, x_train, y_train, x_eval, y_eval, score, train_dates, kf, cycles, visualization, **params):
     """
     This function trains a linear regression model
 
@@ -142,7 +144,7 @@ def modelConstruction(model_dir, model_name, model, x_train, y_train, x_eval, y_
     results_dict["Train RMSE Score"] = train_rmse
 
     eval_score, eval_mse = evalModel(
-        model, x_eval, y_eval, visualization, x_train, y_train)
+        model, x_eval, y_eval, visualization, plot_dir, x_train, y_train)
     results_dict["Test R2 Score"] = eval_score
     results_dict["Test RMSE Score"] = eval_mse
 
