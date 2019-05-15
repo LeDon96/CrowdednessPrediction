@@ -3,7 +3,7 @@ import pandas as pd
 import datetime
 import json
 
-def transformData(events, lat_low, lat_high, lon_low, lon_high, start_date, end_date):
+def transformData(events, lat_low, lat_high, lon_low, lon_high):
     """
     This function transforms all present dates between start and end date in the following, given 
     that the coordinatees of the event fall between the given longitude and latitude borders:
@@ -66,20 +66,19 @@ def transformData(events, lat_low, lat_high, lon_low, lon_high, start_date, end_
 
             #Save present date with confirmation that there is an event
             for date in dates:
-                if start_date < date < end_date:
 
-                    #Dict with all data single event
-                    event_date = {"Date": date, "is_event": 1.0}
+                #Dict with all data single event
+                event_date = {"Date": date, "is_event": 1.0}
 
-                    #Append dict to list
-                    events_dict[key] = event_date
-                    key += 1
+                #Append dict to list
+                events_dict[key] = event_date
+                key += 1
 
     #Convert Dict object to DataFrame and return it
     return pd.DataFrame.from_dict(events_dict, orient="index")
 
 
-def eventDF(json_events_path, lon_low, lon_high, lat_low, lat_high, start_date, end_date):
+def eventDF(json_events_path, lon_low, lon_high, lat_low, lat_high):
     """
     This is the main functions that constructs the full events DF, by calling the needed function
 
@@ -103,6 +102,6 @@ def eventDF(json_events_path, lon_low, lon_high, lat_low, lat_high, start_date, 
         events = json.load(file_data)
 
     #Transform data to desired format
-    event_df = transformData(events, lat_low, lat_high, lon_low, lon_high, start_date, end_date)
+    event_df = transformData(events, lat_low, lat_high, lon_low, lon_high)
 
     return event_df
