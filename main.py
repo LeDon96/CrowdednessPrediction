@@ -7,20 +7,22 @@ import os
 #Import own functions
 from Code.ImportData.constructFullDataset import constructDF
 from Code.Models.models import models
+from Code.Prediction.Prediction import prediction
+from Code.Prediction.minMaxCoordinates import minMaxCoordinates
 
 #Dict with input file paths
 
 def setUp():
-    with open('InputFilePaths.txt', 'r') as f:
+    with open("ParamSettings/InputFilePaths.txt", "r") as f:
         input_dict = eval(f.read())
 
-    with open('OutputFilePaths.txt', 'r') as f:
+    with open("ParamSettings/OutputFilePaths.txt", "r") as f:
         output_dict = eval(f.read())
 
-    with open('HPSettings.txt', 'r') as f:
+    with open("ParamSettings/HParams.txt", "r") as f:
         params_dict = eval(f.read())
 
-    with open('ModelSettings.txt', 'r') as f:
+    with open("ParamSettings/ModelParams.txt", "r") as f:
         models_dict = eval(f.read())
 
     if os.path.isdir("Output") == False:
@@ -39,6 +41,8 @@ def main():
 
     if params_dict["make_models"]:
         models(output_dict, params_dict, models_dict)
+
+    prediction(output_dict, params_dict)
 
 if __name__ == '__main__':
     main()

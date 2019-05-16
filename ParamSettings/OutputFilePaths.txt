@@ -6,4 +6,8 @@
 "models": "Output/Models/",
 "plots": "Output/Plots/",
 "reg_metrics": "Output/Datasets/RegModelResults.csv", 
-"clas_metrics": "Output/Datasets/ClasModelResults.csv"}
+"clas_metrics": "Output/Datasets/ClasModelResults.csv",
+"rfg_model": "Output/Models/rfg_model.sav",
+"xgbr_model": "Output/Models/xgbr_model.sav",
+"rfc_model": "Output/Models/rfc_model.sav",
+"xgbc_model": "Output/Models/xgbc_model.sav"}

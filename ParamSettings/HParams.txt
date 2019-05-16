@@ -31,8 +31,12 @@
 "make_fullDF": False,
 "make_models": True,
 "reg_models": [
-    "lr"
+    "lr",
+    "rfg",
+    "xgbr"
 ],
 "clas_models": [
-    "dc"
+    "dc",
+    "rfc",
+    "xgbc"
 ]}
