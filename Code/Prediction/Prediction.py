@@ -47,7 +47,7 @@ def generatePredictions(start_date, end_date, sensors, model, stations, lat_scal
     return predict_df
 
 def constructFeatures(model, start_date, end_date, add_sensors, extra_coordinate, extra_lon, extra_lat,
-                        full_df, passenger_df, stations):
+                        full_df, passenger_df, stations, output_dict):
 
     if add_sensors == False and extra_coordinate == False:
         print("At least, either the custom coordinates or the sensors have to be added")
@@ -62,14 +62,18 @@ def constructFeatures(model, start_date, end_date, add_sensors, extra_coordinate
             sensors = np.array("Custom")
 
         model, lat_scaler, lon_scaler, station_scaler, xgbr_model = im.importModels(
-            model)
+            model, output_dict)
 
         df = generatePredictions(start_date, end_date, sensors, model, stations, lat_scaler, lon_scaler, add_sensors, extra_coordinate,
                                 extra_lon, extra_lat, full_df, station_scaler, xgbr_model, passenger_df)
 
         return df
 
-def prediction(full_df, passenger_df, stations):
+def prediction(output_dict, params_dict):
+
+    full_df = pd.read_csv(output_dict["full_df"])
+    passenger_df = pd.read_csv(output_dict["average_passenger_counts"])
+    stations = params_dict["stations"]
 
     model = "rfg"
     start_date = pd.to_datetime('2019-10-01')
@@ -82,19 +86,6 @@ def prediction(full_df, passenger_df, stations):
     extra_lat = round(random.uniform(lat_min, lat_max), 6)
 
     df = constructFeatures(model, start_date, end_date, add_sensors, extra_coordinate, extra_lon, extra_lat,
-                           full_df, passenger_df, stations)
+                           full_df, passenger_df, stations, output_dict)
 
     df.to_csv("../../../../Data_thesis/Full_Datasets/Predictions.csv", index=False)
-
-def main():
-
-    full_df = pd.read_csv("../../../../Data_thesis/Full_Datasets/Full.csv")
-    passenger_df = pd.read_csv(
-        "../../../../Data_thesis/Full_Datasets/AveragePassengerCounts.csv")
-    stations = ["Nieuwmarkt", "Nieuwezijds Kolk",
-                "Dam", "Spui", "Centraal Station"]
-
-    prediction(full_df, passenger_df, stations)
-
-if __name__ == '__main__':
-	main()
