@@ -120,8 +120,8 @@ def evalModel(model, x_eval, y_eval, labels, visualization, plot_dir, x_train, y
 
         visualizer.fit(x_train.drop(columns={"Date"}), y_train["CrowdednessCount"])
         visualizer.score(x_eval, y_eval)
-        visualizer.finalize()
-        plt.savefig("{0}{1}.png".format(plot_dir, model))
+        visualizer.poof("{0}{1}.png".format(plot_dir, model))
+        plt.gcf().clear()
 
     return acc, prec_dict, rec_dict, f1_dict
 

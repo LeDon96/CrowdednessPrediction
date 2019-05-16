@@ -104,9 +104,9 @@ def evalModel(model, x_eval, y_eval, visualization, plot_dir, x_train, y_train):
         # Fit the training data to the visualizer
         visualizer.fit(x_train.drop(columns={"Date"}), y_train["CrowdednessCount"])
         visualizer.score(x_eval, y_eval)  # Evaluate the model on the test data
-        visualizer.finalize()
-        plt.savefig("{0}{1}.png".format(plot_dir, model))
-
+        visualizer.poof("{0}{1}.png".format(plot_dir, model))
+        plt.gcf().clear()
+        
     return eval_model_score, np.sqrt(eval_model_mse)
 
 def modelConstruction(model_dir, plot_dir, model_name, model, x_train, y_train, x_eval, y_eval, score, train_dates, kf, cycles, visualization, **params):
