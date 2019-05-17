@@ -6,7 +6,7 @@
     'GAWW-05', 
     'GAWW-06', 
     'GAWW-07'
-], 
+],
 'gaww_02': [
     2, 
     '02R', 
@@ -28,10 +28,9 @@
 'lon_high': 4.91, 
 'lat_low': 52.36, 
 'lat_high': 52.38, 
-'make_fullDF': True, 
+'make_fullDF': False, 
 'make_models': True, 
-'reg_models': [
-    'lr', 
+'reg_models': [ 
     'rfg', 
     'xgbr'
 ], 

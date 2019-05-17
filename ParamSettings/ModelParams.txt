@@ -12,7 +12,7 @@
     {"name": "Random Forrest Regressor",
     "score": "r2",
     "visualization": True,
-    "cycles": 12,
+    "cycles": 9,
     "params": 
         {"n_estimators": list(range(300, 400, 25)),
         "criterion": ["mse"],
@@ -23,10 +23,10 @@
     {"name": "XGBoost Regressor",
     "score": "r2",
     "visualization": True,
-    "cycles": 12,
+    "cycles": 15,
     "params": 
-        {"learning_rate": [0.05, 0.1, 0.15, 0.2, 0.25],
-        "n_estimators": list(range(100, 400,25)),
+        {"learning_rate": [0.05, 0.1, 0.15],
+        "n_estimators": list(range(100, 300,25)),
         "booster": ["gbtree"],
         "objective": ["reg:linear", "reg:gamma", "reg:tweedie"]
         }},
@@ -42,7 +42,7 @@
     {"name": "Random Forrest Classification",
     "score": "f1_weighted",
     "visualization": True,
-    "cycles": 1,
+    "cycles": 15,
     "params": 
         {"n_estimators": list(range(300, 400, 25)),
         "criterion": ["gini", "entropy"],
@@ -55,14 +55,17 @@
     {"name": "XGBoost Classification",
     "score": "f1_weighted",
     "visualization": True,
-    "cycles": 1,
+    "cycles": 15,
     "params": 
-        {"learning_rate": [0.05, 0.1, 0.15, 0.2, 0.25],
+        {"learning_rate": [0.05, 0.1, 0.15],
         "n_estimators": list(range(100, 300, 25)),
         "booster": ["gbtree"],
         "objective": ["multi:softmax", "multi:softprob"]
         }},
 "trainTest":
     {"size":  0.8
-    }
+    },
+"KFold": 
+    {"size": 10,
+    "shuffle": True}
 }
