@@ -1,4 +1,4 @@
-from bubbly.bubbly import bubbleplot
+from Code.bubbly.bubbly import bubbleplot
 import plotly 
 import pandas as pd
 
