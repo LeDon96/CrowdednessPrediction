@@ -1,42 +1,46 @@
-{"needed_sensors": [
-    "GAWW-01",
-    "GAWW-02",
-    "GAWW-03",
-    "GAWW-04",
-    "GAWW-05",
-    "GAWW-06",
-    "GAWW-07"
-],
-"gaww_02": [
-    2,
-    "02R",
-    "2R",
-    "Oude Kennissteeg Occ wifi"
+{'needed_sensors': [
+    'GAWW-01', 
+    'GAWW-02', 
+    'GAWW-03', 
+    'GAWW-04', 
+    'GAWW-05', 
+    'GAWW-06', 
+    'GAWW-07'
 ], 
-"gaww_03": [
-    3,
-    "03R"
-],
-"stations": [
-    "Nieuwmarkt",
-    "Nieuwezijds Kolk",
-    "Dam",
-    "Spui",
-    "Centraal Station"
-],
-"lon_low": 4.89,
-"lon_high": 4.91,
-"lat_low": 52.36,
-"lat_high": 52.38,
-"make_fullDF": False,
-"make_models": True,
-"reg_models": [
-    "lr",
-    "rfg",
-    "xgbr"
-],
-"clas_models": [
-    "dc",
-    "rfc",
-    "xgbc"
-]}
+'gaww_02': [
+    2, 
+    '02R', 
+    '2R', 
+    'Oude Kennissteeg Occ wifi'
+], 
+'gaww_03': [
+    3, 
+    '03R'
+], 
+'stations': [
+    'Nieuwmarkt', 
+    'Nieuwezijds Kolk', 
+    'Dam', 
+    'Spui', 
+    'Centraal Station'
+], 
+'lon_low': 4.89, 
+'lon_high': 4.91, 
+'lat_low': 52.36, 
+'lat_high': 52.38, 
+'make_fullDF': True, 
+'make_models': True, 
+'reg_models': [
+    'lr', 
+    'rfg', 
+    'xgbr'
+], 
+'clas_models': [
+    'dc', 
+    'rfc', 
+    'xgbc'
+], 
+'lon_max': 4.9004405, 
+'lon_min': 4.8973336, 
+'lat_max': 52.3746006, 
+'lat_min': 52.3723534}

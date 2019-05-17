@@ -10,4 +10,5 @@
 "rfg_model": "Output/Models/rfg_model.sav",
 "xgbr_model": "Output/Models/xgbr_model.sav",
 "rfc_model": "Output/Models/rfc_model.sav",
-"xgbc_model": "Output/Models/xgbc_model.sav"}
+"xgbc_model": "Output/Models/xgbc_model.sav",
+"predictions": "Output/Datasets/Predictions.csv"}

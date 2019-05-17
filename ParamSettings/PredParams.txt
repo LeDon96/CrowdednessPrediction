@@ -2,4 +2,6 @@
 "start_date": "2019-10-01",
 "end_date": "2019-10-05",
 "add_sensors": True,
-"extra_coordinate": False}
+"extra_coordinate": False,
+"extra_lon": 4.898,
+"extra_lat": 52.373,}
