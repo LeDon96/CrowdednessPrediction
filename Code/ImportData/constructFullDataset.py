@@ -16,8 +16,8 @@ def constructDF(input_dict, output_dict, params_dict, pbar, i):
 
     Parameters:
     - input_dict: dict with all paths to files with needed input data
-    - output_dict: dict with all paths of where output files should be saved
-    - params_dict: dict with all general hyperparameters that can be changed by user
+    - output_dict (dict): all paths of where output files should be saved
+    - params_dict (dict): all general hyperparameters that can be changed by user
     - pbar: Progress bar 
     - i: current number of iteration the progress is at
 
