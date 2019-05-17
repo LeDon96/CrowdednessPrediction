@@ -77,7 +77,7 @@ def trainModel(x_train, y_train, train_dates, kf, model, params, model_name):
     return mean_score, mean_rmse, model
 
 
-def evalModel(model, x_eval, y_eval, visualization, plot_dir, x_train, y_train):
+def evalModel(model, x_eval, y_eval, visualization, plot_dir, model_name, x_train, y_train):
     """
     This function evaluates the trained model on unseen data
 
@@ -104,7 +104,7 @@ def evalModel(model, x_eval, y_eval, visualization, plot_dir, x_train, y_train):
         # Fit the training data to the visualizer
         visualizer.fit(x_train.drop(columns={"Date"}), y_train["CrowdednessCount"])
         visualizer.score(x_eval, y_eval)  # Evaluate the model on the test data
-        visualizer.poof("{0}{1}.png".format(plot_dir, model))
+        visualizer.poof("{0}{1}.png".format(plot_dir, model_name))
         plt.gcf().clear()
         
     return eval_model_score, np.sqrt(eval_model_mse)
@@ -144,7 +144,7 @@ def modelConstruction(model_dir, plot_dir, model_name, model, x_train, y_train, 
     results_dict["Train RMSE Score"] = train_rmse
 
     eval_score, eval_mse = evalModel(
-        model, x_eval, y_eval, visualization, plot_dir, x_train, y_train)
+        model, x_eval, y_eval, visualization, plot_dir, model_name, x_train, y_train)
     results_dict["Test R2 Score"] = eval_score
     results_dict["Test RMSE Score"] = eval_mse
 

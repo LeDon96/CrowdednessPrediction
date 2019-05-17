@@ -91,7 +91,7 @@ def trainModel(model, x_train, y_train, kf, train_dates, labels, params, model_n
 
     return mean_acc, prec_dict, rec_dict, f1_dict, model
 
-def evalModel(model, x_eval, y_eval, labels, visualization, plot_dir, x_train, y_train, model_name):
+def evalModel(model, x_eval, y_eval, labels, visualization, plot_dir, model_name, x_train, y_train):
 
     prec_dict = {}
     rec_dict = {}
@@ -120,7 +120,7 @@ def evalModel(model, x_eval, y_eval, labels, visualization, plot_dir, x_train, y
 
         visualizer.fit(x_train.drop(columns={"Date"}), y_train["CrowdednessCount"])
         visualizer.score(x_eval, y_eval)
-        visualizer.poof("{0}{1}.png".format(plot_dir, model))
+        visualizer.poof("{0}{1}.png".format(plot_dir, model_name))
         plt.gcf().clear()
 
     return acc, prec_dict, rec_dict, f1_dict
@@ -165,7 +165,7 @@ def modelConstruction(model_dir, plot_dir, model_name, model, labels, x_train, y
     results_dict["Train F1 Score"] = train_f1
 
     eval_acc, eval_prec, eval_rec, eval_f1 = evalModel(
-        model, x_eval, y_eval, labels, visualization, plot_dir, x_train, y_train, model_name)
+        model, x_eval, y_eval, labels, visualization, plot_dir, model_name, x_train, y_train)
     results_dict["Evaluation Accuracy Score"] = eval_acc
     results_dict["Evaluation Precision Score"] = eval_prec
     results_dict["Evaluation Recall Score"] = eval_rec
