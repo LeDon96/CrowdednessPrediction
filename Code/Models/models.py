@@ -12,7 +12,7 @@ from xgboost import XGBRegressor, XGBClassifier
 from sklearn.dummy import DummyClassifier
 from sklearn.ensemble import RandomForestClassifier
 
-def regressionModels(output_dict, params_dict, models_dict, kf, full_df):
+def regressionModels(output_dict, params_dict, models_dict, kf, full_df, pbar, i):
 
     metrics_dict = {}
 
@@ -31,11 +31,15 @@ def regressionModels(output_dict, params_dict, models_dict, kf, full_df):
             output_dict["models"], output_dict["plots"], name, model, x_train, y_train, x_eval, y_eval, models_dict[name]["score"],
             train_dates, kf, models_dict[name]["cycles"], models_dict[name]["visualization"], **models_dict[name]["params"])
 
+        pbar.update(i+1)
+
     df = pd.DataFrame.from_dict(metrics_dict, orient="index")
     df.to_csv(output_dict["reg_metrics"], index=True)
 
+    pbar.update(i+1)
 
-def classificationModels(output_dict, params_dict, models_dict, kf, full_df):
+
+def classificationModels(output_dict, params_dict, models_dict, kf, full_df, pbar, i):
 
     metrics_dict = {}
     labels = [1, 2, 3, 4]
@@ -59,16 +63,20 @@ def classificationModels(output_dict, params_dict, models_dict, kf, full_df):
             output_dict["models"], output_dict["plots"], name, model, labels, x_train, y_train, x_eval, y_eval, models_dict[name]["score"],
             train_dates, kf, models_dict[name]["cycles"], models_dict[name]["visualization"], **models_dict[name]["params"])
 
+        pbar.update(i+1)
+
     df = pd.DataFrame.from_dict(metrics_dict, orient="index")
     df.to_csv(output_dict["clas_metrics"], index=True)
 
+    pbar.update(i+1)
 
-def models(output_dict, params_dict, models_dict):
+
+def models(output_dict, params_dict, models_dict, pbar, i):
 
     #Variables
     kf = KFold(n_splits=10, shuffle=True, random_state=42)
 
     full_df = pd.read_csv(output_dict["full_df"])
 
-    regressionModels(output_dict, params_dict, models_dict, kf, full_df)
-    classificationModels(output_dict, params_dict, models_dict, kf, full_df)
+    regressionModels(output_dict, params_dict, models_dict, kf, full_df, pbar, i)
+    classificationModels(output_dict, params_dict, models_dict, kf, full_df, pbar, i)
