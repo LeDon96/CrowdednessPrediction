@@ -1,4 +1,4 @@
-from sklearn.model_selection import GridSearchCV
+from sklearn.model_selection import RandomizedSearchCV
 from sklearn.metrics import precision_score
 from sklearn.metrics import recall_score
 from sklearn.metrics import accuracy_score
@@ -26,8 +26,8 @@ def hyperParameter(x_train, y_train, score, model, model_name, cycles, params):
     """
 
     #Call on the the hyper parameter fitting modle
-    hyp = GridSearchCV(estimator=model, param_grid=params, pre_dispatch=cycles, scoring=score, n_jobs=4, cv=10,
-                             refit=score)
+    hyp = RandomizedSearchCV(estimator=model, param_distributions=params, n_iter=cycles, scoring=score, n_jobs=4, cv=10,
+                             refit=score, random_state=42)
 
     #Run hyper parameter fitting
     ## XGB Classifier model only takes values as input

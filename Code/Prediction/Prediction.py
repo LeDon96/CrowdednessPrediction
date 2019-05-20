@@ -79,6 +79,6 @@ def prediction(output_dict, params_dict, pred_dict, pbar, i):
 
         pbar.update(i+1)
 
-        df.to_csv(output_dict["Predictions"], index=False)
+        df.to_csv(output_dict["predictions"], index=False)
 
         pbar.update(i+1)
