@@ -4,4 +4,5 @@
 "add_sensors": True,
 "extra_coordinate": False,
 "extra_lon": 4.898,
-"extra_lat": 52.373,}
+"extra_lat": 52.373,
+"make_plot": False}

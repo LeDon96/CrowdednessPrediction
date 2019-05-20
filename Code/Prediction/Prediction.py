@@ -67,12 +67,13 @@ def generatePredictions(sensors, model, stations, lat_scaler, lon_scaler, statio
     predict_df = pd.DataFrame.from_dict(predict_dict)
 
     #Generate visualizations prediction
-    for date in dates:
+    if pred_dict["make_plot"]:
+        for date in dates:
 
-        series_df = predict_df[predict_df["Date"] == date].copy()
-        series_df.replace(2400, 0, inplace=True)
-        series_df.sort_values(by=["Hour", "Sensor"], inplace=True)
-        timeSeries.plotTimeSeries(series_df.drop(columns={"Date"}), date, output_dict)
+            series_df = predict_df[predict_df["Date"] == date].copy()
+            series_df.replace(2400, 0, inplace=True)
+            series_df.sort_values(by=["Hour", "Sensor"], inplace=True)
+            timeSeries.plotTimeSeries(series_df.drop(columns={"Date"}), date, output_dict)
 
     return predict_df
 
