@@ -30,7 +30,7 @@
 'lat_high': 52.38, 
 'make_fullDF': True, 
 'make_models': True,
-'gen_borders': False 
+'gen_borders': False,
 'reg_models': [
     'lr', 
     'rfg', 
