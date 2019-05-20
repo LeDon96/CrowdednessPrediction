@@ -28,8 +28,8 @@
 'lon_high': 4.91, 
 'lat_low': 52.36, 
 'lat_high': 52.38, 
-'make_fullDF': True, 
-'make_models': True,
+'make_fullDF': False, 
+'make_models': False,
 'gen_borders': False,
 'reg_models': [
     'lr', 

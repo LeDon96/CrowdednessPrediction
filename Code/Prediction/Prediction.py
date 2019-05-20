@@ -125,8 +125,8 @@ def prediction(output_dict, params_dict, pred_dict, pbar, i):
         pbar.update(i+1)
 
         #Construct DF with generated predictions and needed input data for those predictions
-        df = generatePredictions(sensors, model, stations, lat_scaler, lon_scaler, full_df, station_scaler, 
-                                xgbr_model, passenger_df, output_dict, pred_dict)
+        df = generatePredictions(sensors, model, stations, lat_scaler, lon_scaler, station_scaler, full_df, xgbr_model,
+                                 passenger_df, output_dict, pred_dict)
 
         #Advanced iteration progressbar
         pbar.update(i+1)
