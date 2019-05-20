@@ -79,14 +79,15 @@ def main():
             #Construct full dataset
             constructDF(input_dict, output_dict, params_dict, pbar, i)
 
-            #Import full dataset and set latitude and longitude borders for the custom sensor
-            full_df = pd.read_csv(output_dict["full_df"])
-            params_dict["lon_max"], params_dict["lon_min"], params_dict["lat_max"], params_dict["lat_min"] = minMaxCoordinates(
-                full_df)
+            if params_dict["gen_borders"]:
+                #Import full dataset and set latitude and longitude borders for the custom sensor
+                full_df = pd.read_csv(output_dict["full_df"])
+                params_dict["lon_max"], params_dict["lon_min"], params_dict["lat_max"], params_dict["lat_min"] = minMaxCoordinates(
+                    full_df)
 
-            #Save the sensor borders in general parameters
-            with open("ParamSettings/HParams.txt", "w") as f:
-                f.write(str(params_dict))
+                #Save the sensor borders in general parameters
+                with open("ParamSettings/HParams.txt", "w") as f:
+                    f.write(str(params_dict))
 
         #If models need to be constructed
         if params_dict["make_models"]:

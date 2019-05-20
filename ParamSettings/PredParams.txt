@@ -1,6 +1,6 @@
 {"model": "rfg",
-"start_date": "2019-10-01",
-"end_date": "2019-10-05",
+"start_date": "2019-01-01",
+"end_date": "2019-03-25",
 "add_sensors": True,
 "extra_coordinate": False,
 "extra_lon": 4.898,
