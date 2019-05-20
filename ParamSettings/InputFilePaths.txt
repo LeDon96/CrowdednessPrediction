@@ -1,0 +1,6 @@
+{"sensorData": "../../Data_thesis/CMSA/cmsa_data.xlsx",
+"coordinateData": "../../Data_thesis/Open_Data/crowdedness_sensoren.csv",
+"blipData": "../../Data_thesis/CMSA/BlipData.csv",
+"arrData": "../../Data_thesis/GVB/Datalab_Reis_Bestemming_Uur_20190402.csv",
+"deppData": "../../Data_thesis/GVB/Datalab_Reis_Herkomst_Uur_20190403.csv",
+"eventData": "../../Data_thesis/Open_Data/Evenementen.json"}
