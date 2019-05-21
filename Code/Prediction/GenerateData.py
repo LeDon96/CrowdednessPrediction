@@ -119,8 +119,8 @@ def SelectSensor(weekday, sensor, stations, sensor_dict, station_dict, lat_scale
         weight = rbf_kernel(x, y)[0, 0]
 
         #Save the station weight and score in dict
-        weights_dict.update({station + " Weight": weight,
-                             station + " Score": weight * passengers})
+        weights_dict.update({station + " score": weight * passengers, 
+                            station + " weight": weight})
 
     return lon_scaled, lat_scaled, weights_dict
 

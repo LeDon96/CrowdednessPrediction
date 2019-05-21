@@ -132,7 +132,8 @@ def prediction(output_dict, params_dict, pred_dict, pbar, i):
         pbar.update(i+1)
 
         #Save prediction data to CSV
-        df.to_csv(output_dict["predictions"], index=False)
+        df.to_csv(output_dict["predictions"] +
+                  "{0}_Predictions.csv".format(pred_dict["model"]), index=False)
 
         #Advanced iteration progressbar
         pbar.update(i+1)
