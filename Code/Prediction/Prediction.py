@@ -58,10 +58,10 @@ def generatePredictions(sensors, model, stations, lat_scaler, lon_scaler, statio
     #Generate crowdedness predictions
     if xgbr_model:
         predict_dict["CrowdednessCount"] = model.predict(
-            input_df.values).astype(int)
+            input_df.values)
         predict_dict["CrowdednessCount"][predict_dict["CrowdednessCount"] < 0] = 0
     else:
-        predict_dict["CrowdednessCount"] = model.predict(input_df).astype(int)
+        predict_dict["CrowdednessCount"] = model.predict(input_df)
 
     #Convert dict to DF
     predict_df = pd.DataFrame.from_dict(predict_dict)
