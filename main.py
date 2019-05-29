@@ -93,7 +93,7 @@ def main():
         if params_dict["make_models"]:
 
             #Construct models
-            models(output_dict, params_dict, models_dict, pbar, i)
+            models(output_dict, params_dict, models_dict, pred_dict, pbar, i)
 
         #Generate Predictions
         prediction(output_dict, params_dict, pred_dict, pbar, i)

@@ -198,28 +198,15 @@ def combineData(dates, sensors, sensor_dict, station_dict, stations, lat_scaler,
     if sensors.size == 1:
         sensor = np.array2string(sensors).replace("'", "")
 
-        if len(dates) == 1:
-            j, input_dict = constructSensorData(j, input_dict, dates, sensor, sensor_dict, station_dict, stations, lat_scaler, lon_scaler,
-                                                station_scaler, passenger_df)
-
-        else:
-
-            for date in dates:
-                j, input_dict = constructSensorData(j, input_dict, date, sensor, sensor_dict, station_dict, stations, lat_scaler,
-                                                    lon_scaler, station_scaler, passenger_df)
+        for date in dates:
+            j, input_dict = constructSensorData(j, input_dict, date, sensor, sensor_dict, station_dict, stations, lat_scaler,
+                                                lon_scaler, station_scaler, passenger_df)
 
     else:
         for sensor in sensors:
-
-            if len(dates) == 1:
-                j, input_dict = constructSensorData(j, input_dict, dates, sensor, sensor_dict, station_dict, stations, lat_scaler,
+            for date in dates:
+                j, input_dict = constructSensorData(j, input_dict, date, sensor, sensor_dict, station_dict, stations, lat_scaler,
                                                     lon_scaler, station_scaler, passenger_df)
-
-            else:
-
-                for date in dates:
-                    j, input_dict = constructSensorData(j, input_dict, date, sensor, sensor_dict, station_dict, stations, lat_scaler,
-                                                        lon_scaler, station_scaler, passenger_df)
 
     return pd.DataFrame.from_dict(input_dict, orient="index")
 

@@ -141,7 +141,7 @@ def trainModel(model, x_train, y_train, kf, train_dates, labels, params, model_n
 
     return mean_acc, prec_dict, rec_dict, f1_dict, model
 
-def evalModel(model, x_eval, y_eval, labels, visualization, plot_dir, model_name, x_train, y_train):
+def evalModel(model, x_eval, y_eval, labels, visualization, plot_dir, model_name, x_train, y_train, saveResults, pred_output):
     """
     This function evaluates the trained model on unseen data
 
@@ -168,6 +168,10 @@ def evalModel(model, x_eval, y_eval, labels, visualization, plot_dir, model_name
     rec_dict = {}
     f1_dict = {}
 
+    if saveResults:
+        lon = x_eval["LonScaled"]
+        lat = x_eval["LatScaled"]
+
     # XGB Classifier model only takes values as input
     if model_name == "xgbr":
         x_eval = x_eval.values
@@ -193,7 +197,7 @@ def evalModel(model, x_eval, y_eval, labels, visualization, plot_dir, model_name
             f1_dict["{0}".format(labels[i])] = f1[i]
 
     #Visualize the model results
-    if visualization == True:
+    if visualization:
         visualizer = ClassPredictionError(
                 model
             )
@@ -202,10 +206,17 @@ def evalModel(model, x_eval, y_eval, labels, visualization, plot_dir, model_name
         visualizer.poof("{0}{1}.png".format(plot_dir, model_name))
         plt.gcf().clear()
 
+    if saveResults:
+        save_dict = {"Lat": lat, "Lon": lon, "True": y_eval,
+                     "Pred": pd.Series(y_pred_eval)}
+        save_df = pd.DataFrame.from_dict(save_dict, orient="index")
+        save_df.to_csv(pred_output + "{0}_predResults.csv".format(model_name), index=False)
+
     return acc, prec_dict, rec_dict, f1_dict
 
 
-def modelConstruction(model_dir, plot_dir, model_name, model, labels, x_train, y_train, x_eval, y_eval, score, train_dates, kf, cycles, visualization, params, kf_size):
+def modelConstruction(model_dir, plot_dir, model_name, model, labels, x_train, y_train, x_eval, y_eval, score, train_dates, kf, cycles, visualization, params, kf_size, 
+                        saveResults, pred_output):
     """
     This function trains a linear regression model
 
@@ -251,7 +262,7 @@ def modelConstruction(model_dir, plot_dir, model_name, model, labels, x_train, y
 
     #Evaluate model on unseen data
     eval_acc, eval_prec, eval_rec, eval_f1 = evalModel(
-        model, x_eval, y_eval, labels, visualization, plot_dir, model_name, x_train, y_train)
+        model, x_eval, y_eval, labels, visualization, plot_dir, model_name, x_train, y_train, saveResults, pred_output)
    
     #Save results evaluation
     results_dict["Evaluation Accuracy Score"] = eval_acc

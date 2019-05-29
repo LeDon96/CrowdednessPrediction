@@ -67,5 +67,6 @@
     },
 "KFold": 
     {"size": 10,
-    "shuffle": True}
+    "shuffle": True},
+"saveResults": True 
 }

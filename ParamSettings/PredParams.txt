@@ -1,5 +1,5 @@
 {"model": "rfg",
-"start_date": "2019-01-01",
+"start_date": "2019-03-25",
 "end_date": "2019-03-26",
 "add_sensors": True,
 "extra_coordinate": False,

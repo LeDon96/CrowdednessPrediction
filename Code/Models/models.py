@@ -49,7 +49,8 @@ def regressionModels(output_dict, params_dict, models_dict, kf, full_df, pbar, i
         #Construct the model and save the model results
         metrics_dict[name] = reg.modelConstruction(
             output_dict["models"], output_dict["plots"], name, model, x_train, y_train, x_eval, y_eval, models_dict[name]["score"],
-            train_dates, kf, models_dict[name]["cycles"], models_dict[name]["visualization"], models_dict[name]["params"], models_dict["KFold"]["size"])
+            train_dates, kf, models_dict[name]["cycles"], models_dict[name]["visualization"], models_dict[name]["params"], models_dict["KFold"]["size"],
+            models_dict["saveResults"], output_dict["predictions"])
 
         #Advanced iteration progressbar
         pbar.update(i+1)
@@ -105,7 +106,8 @@ def classificationModels(output_dict, params_dict, models_dict, kf, full_df, pba
         #Construct the model and save the model results
         metrics_dict[name] = clas.modelConstruction(
             output_dict["models"], output_dict["plots"], name, model, labels, x_train, y_train, x_eval, y_eval, models_dict[name]["score"],
-            train_dates, kf, models_dict[name]["cycles"], models_dict[name]["visualization"], models_dict[name]["params"], models_dict["KFold"]["size"])
+            train_dates, kf, models_dict[name]["cycles"], models_dict[name]["visualization"], models_dict[name]["params"], models_dict["KFold"]["size"],
+            models_dict["saveResults"], output_dict["predictions"])
 
         #Advanced iteration progressbar
         pbar.update(i+1)
@@ -118,7 +120,7 @@ def classificationModels(output_dict, params_dict, models_dict, kf, full_df, pba
     pbar.update(i+1)
 
 
-def models(output_dict, params_dict, models_dict, pbar, i):
+def models(output_dict, params_dict, models_dict, pred_dict, pbar, i):
     """
     This function calls on functions to construct all the models
 
@@ -140,6 +142,13 @@ def models(output_dict, params_dict, models_dict, pbar, i):
 
     #Import Dataset
     full_df = pd.read_csv(output_dict["full_df"])
+
+    #Remove dates dataset used in prediction
+    split_date = pd.to_datetime(pred_dict["start_date"], format="%Y-%m-%d")
+    full_df["Date"] = pd.to_datetime(
+        full_df["Date"], format="%Y-%m-%d")
+    full_df = full_df[full_df["Date"] <= split_date].reset_index().drop(columns=[
+        "index"])
 
     #Construct models
     regressionModels(output_dict, params_dict, models_dict, kf, full_df, pbar, i)
