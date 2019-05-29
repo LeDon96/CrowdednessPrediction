@@ -4,6 +4,7 @@ from sklearn.metrics import mean_squared_error
 from yellowbrick.regressor import PredictionError
 import pickle
 import matplotlib.pyplot as plt
+import pandas as pd
 
 
 def hyperParameter(x_train, y_train, score, model, model_name, cycles, **params):

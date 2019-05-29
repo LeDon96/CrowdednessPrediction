@@ -6,6 +6,7 @@ from sklearn.metrics import f1_score
 from yellowbrick.classifier import ClassPredictionError
 import pickle
 import matplotlib.pyplot as plt
+import pandas as pd
 
 def hyperParameter(x_train, y_train, score, model, model_name, cycles, params):
     """

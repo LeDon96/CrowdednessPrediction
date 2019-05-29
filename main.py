@@ -51,7 +51,7 @@ def main():
     """
 
     #Number of iterations, given that the Dataset and models are constructed
-    max_value = 3
+    max_value = 4
 
     #Initialize progressbar
     widgets = [Percentage(), Bar(), " ", Timer(), ", ",

@@ -1,4 +1,4 @@
-{"model": "xgbr",
+{"model": "rfg",
 "start_date": "2019-01-01",
 "end_date": "2019-03-26",
 "add_sensors": True,
