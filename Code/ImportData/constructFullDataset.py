@@ -25,9 +25,9 @@ def constructDF(input_dict, output_dict, params_dict, pbar, i):
     """
 
     #Constructs the sensor datast
-    sensor_df = sd.sensorDF(input_dict["sensorData"], input_dict["coordinateData"], input_dict["blipData"],
-                            params_dict["needed_sensors"], params_dict["gaww_02"], params_dict["gaww_03"],
-                            output_dict["lon_scaler"], output_dict["lat_scaler"])
+    sensor_df = sd.sensorDF(input_dict["coordinateData"], input_dict["blipData"],params_dict["needed_sensors"],
+                            output_dict["lon_scaler"], output_dict["lat_scaler"], input_dict["sensorData"],
+                            params_dict["gaww_02"], params_dict["gaww_03"])
 
     #Advanced iteration progressbar
     pbar.update(i+1)
@@ -39,8 +39,8 @@ def constructDF(input_dict, output_dict, params_dict, pbar, i):
     pbar.update(i+1)
 
     #Constructs the event dataset
-    event_df = evd.eventDF(input_dict["eventData"], params_dict["lon_low"], params_dict["lon_high"], 
-                           params_dict["lat_low"], params_dict["lat_high"])
+    event_df = evd.eventDF(input_dict["eventData"], params_dict["lon_min"], params_dict["lon_max"], 
+                           params_dict["lat_min"], params_dict["lat_max"])
 
     #Advanced iteration progressbar
     pbar.update(i+1)

@@ -58,10 +58,10 @@ def generatePredictions(sensors, model, stations, lat_scaler, lon_scaler, statio
     #Generate crowdedness predictions
     if xgbr_model:
         predict_dict["CrowdednessCount"] = model.predict(
-            input_df.values).astype(int)
+            input_df.values)
         predict_dict["CrowdednessCount"][predict_dict["CrowdednessCount"] < 0] = 0
     else:
-        predict_dict["CrowdednessCount"] = model.predict(input_df).astype(int)
+        predict_dict["CrowdednessCount"] = model.predict(input_df)
 
     #Convert dict to DF
     predict_df = pd.DataFrame.from_dict(predict_dict)
@@ -132,7 +132,8 @@ def prediction(output_dict, params_dict, pred_dict, pbar, i):
         pbar.update(i+1)
 
         #Save prediction data to CSV
-        df.to_csv(output_dict["predictions"], index=False)
+        df.to_csv(output_dict["predictions"] +
+                  "{0}_Predictions.csv".format(pred_dict["model"]), index=False)
 
         #Advanced iteration progressbar
         pbar.update(i+1)

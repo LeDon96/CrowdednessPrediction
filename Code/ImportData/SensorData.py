@@ -44,19 +44,19 @@ def sensorCoordinates(coor_df, needed_sensors):
     return locations_dict
 
 
-def sensorData(sensor_df, blip_df, locations_dict, needed_sensors, gaww_02, gaww_03, lon_scaler_filename, lat_scaler_filename):
+def sensorData(blip_df, locations_dict, needed_sensors, lon_scaler_filename, lat_scaler_filename, sensor_df, gaww_02, gaww_03):
     """
     This function takes all the relevant sensor date and combines this in a single DF 
 
     Parameters:
-    - sensor_df (df): Custom made dataframe with subset sensor data
     - blip_df (df): Constructed df from imported blip data
     - locations_dict (dict): contains the longitude and latitude of the relevant sensors
     - needed_sensors (list): selection of given relevant sensors
-    - gaww-02 (list): alternate names for the gaww-02 sensor
-    - gaww-03 (list): alternate names for the gaww-03 sensor
     - lon_scaler_filename: where the longitude scaler should be saved
     - lat_scaler_filename: where the latitude scaler should be saved
+    - sensor_df (df): Custom made dataframe with subset sensor data
+    - gaww-02 (list): alternate names for the gaww-02 sensor
+    - gaww-03 (list): alternate names for the gaww-03 sensor
 
     Returns: DF with all relevant sensor data
     """
@@ -152,7 +152,7 @@ def sensorData(sensor_df, blip_df, locations_dict, needed_sensors, gaww_02, gaww
     return full_df
 
 
-def sensorDF(path_to_sensorData, path_to_coordinateData, path_to_blipData, needed_sensors, gaww_02, gaww_03, lon_scaler_filename, lat_scaler_filename):
+def sensorDF(path_to_coordinateData, path_to_blipData, needed_sensors, lon_scaler_filename, lat_scaler_filename, path_to_sensorData, gaww_02, gaww_03):
 
     """
     Call on functions to construct full sensor df
@@ -179,7 +179,7 @@ def sensorDF(path_to_sensorData, path_to_coordinateData, path_to_blipData, neede
     locations_dict = sensorCoordinates(coor_df, needed_sensors)
 
     #Transform Crowdedness df
-    full_df = sensorData(sensor_df, blip_df, locations_dict,
-                         needed_sensors, gaww_02, gaww_03, lon_scaler_filename, lat_scaler_filename)
+    full_df = sensorData(blip_df, locations_dict,
+                         needed_sensors, lon_scaler_filename, lat_scaler_filename, sensor_df, gaww_02, gaww_03)
 
     return full_df
