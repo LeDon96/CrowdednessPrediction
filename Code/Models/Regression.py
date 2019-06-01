@@ -169,8 +169,8 @@ def evalModel(model, x_eval, y_eval, visualization, plot_dir, model_name, x_trai
     if saveResults:
         save_dict = {"Lat": lat, "Lon": lon,
                      "True": y_eval, "Pred": pd.Series(y_pred_eval_model)}
-        save_df = pd.DataFrame.from_dict(save_dict, orient="index")
-        save_df.to_csv(pred_output + "{0}_predResults.csv".format(model_name), index=False)
+        save_df = pd.DataFrame.from_dict(save_dict, orient="columns")
+        save_df.to_csv(pred_output + "{0}_evalResults.csv".format(model_name), index=False)
         
     return eval_model_score, np.sqrt(eval_model_mse)
 

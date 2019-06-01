@@ -33,6 +33,12 @@ def importModels(model, output_dict):
     elif model == "xgbc":
         model = pickle.load(
             open(output_dict["xgbc_model"], 'rb'))
+    elif model == "lr":
+        model = pickle.load(
+            open(output_dict["lr_model"], 'rb'))
+    elif model == "dc":
+        model = pickle.load(
+            open(output_dict["dc_model"], 'rb'))
 
     #Import scaler for sensor Latitudes
     lat_scaler = pickle.load(

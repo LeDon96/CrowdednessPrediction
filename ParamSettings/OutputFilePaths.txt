@@ -2,6 +2,7 @@
 "lat_scaler": "Output/Models/lat_scaler.sav",
 "station_scaler": "Output/Models/station_scaler.sav",
 "full_df": "Output/Datasets/FullDF.csv",
+"temp_df": "Output/Datasets/TempDF.csv",
 "average_passenger_counts": "Output/Datasets/AveragePassengerCounts.csv",
 "models": "Output/Models/",
 "plots": "Output/Plots/",
@@ -11,4 +12,6 @@
 "xgbr_model": "Output/Models/xgbr_model.sav",
 "rfc_model": "Output/Models/rfc_model.sav",
 "xgbc_model": "Output/Models/xgbc_model.sav",
+"lr_model": "Output/Models/lr_model.sav",
+"dc_model": "Output/Models/dc_model.sav",
 "predictions": "Output/Datasets/"}

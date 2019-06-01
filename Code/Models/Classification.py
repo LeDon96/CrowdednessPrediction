@@ -209,8 +209,8 @@ def evalModel(model, x_eval, y_eval, labels, visualization, plot_dir, model_name
     if saveResults:
         save_dict = {"Lat": lat, "Lon": lon, "True": y_eval,
                      "Pred": pd.Series(y_pred_eval)}
-        save_df = pd.DataFrame.from_dict(save_dict, orient="index")
-        save_df.to_csv(pred_output + "{0}_predResults.csv".format(model_name), index=False)
+        save_df = pd.DataFrame.from_dict(save_dict, orient="columns")
+        save_df.to_csv(pred_output + "{0}_evalResults.csv".format(model_name), index=False)
 
     return acc, prec_dict, rec_dict, f1_dict
 
