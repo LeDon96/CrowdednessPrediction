@@ -186,42 +186,22 @@ def averagePassengerCount(df, stations):
     Returns: DF with average daily passenger counts per station
     """
 
-    #Dict to save the average count per station
-    average_dict = {}
+    #DataFrame to save the average count per station
+    average_df = pd.DataFrame(columns=["weekday", "Hour", "Station", "Passengers"])
 
     #Loop over given stations to save a df with mean passenger counts
     for station in stations:
         
-        #Group the arrival and departure counts per day, by taking their mean
-        temp_df = df.groupby(["weekday"]).agg({station + " Arrivals": 'mean',
-                                               station + " Departures": 'mean'})
-        
-        #Save station name
-        temp_df["Station"] = station
+        temp = df.groupby(["weekday", "Hour"]).agg({station + " Arrivals": 'mean',
+                                                         station + " Departures": 'mean'}).reset_index()
 
-        #Sum the means of departures and arrivals
-        temp_df["Passengers"] = temp_df[station +
-                                        " Departures"].astype(int) + temp_df[station + " Arrivals"].astype(int)
+        temp["Station"] = station
+        temp["Passengers"] = temp[station + " Arrivals"] + \
+            temp[station + " Departures"]
+        temp = temp[["weekday", "Hour", "Station", "Passengers"]]
 
-        #Drop the seperate mean counts of arrivals and departures
-        temp_df = temp_df.drop(
-            columns={station + " Arrivals", station + " Departures"})
-
-        #Save the df in dict
-        average_dict["{0}".format(station)] = temp_df
-
-    #Loop over all entries in in dict and merge them into one DF
-    for i in range(len(stations)-1):
-
-        #Merge the current DF with the next df
-        average_dict[stations[i+1]] = pd.merge(average_dict[stations[i]],
-                                               average_dict[stations[i+1]], on=["weekday", "Passengers", "Station"], how="outer")
-
-    #Only select the last entry in the dict, as this is the only entry that contains all the DF's
-    df = average_dict[stations[-1]]
-
-    #Sort the rows on weekday
-    df.sort_values(by=["weekday"], inplace=True)
+        average_df = average_df.merge(temp, how="outer", on=[
+                    "weekday", "Hour", "Station", "Passengers"])
 
     return df
 

@@ -69,12 +69,13 @@ def TransformTime(date):
             "Day Cos": day_cos, "Hour Sin": hour_sin, "Hour Cos": hour_cos, "Hour": hour_list}
 
 
-def SelectSensor(weekday, sensor, stations, sensor_dict, station_dict, lat_scaler, lon_scaler, station_scaler, passenger_df):
+def SelectSensor(hour, weekday, sensor, stations, sensor_dict, station_dict, lat_scaler, lon_scaler, station_scaler, passenger_df):
     """
     This function returns the scaled coordinates of the given sensors and the weights and scores of the given stations,
     in relation to eah of the given sensors
 
     Parameters:
+    - hour (int): given hour of the day
     - weekday (int): given day of the week 
     - sensor (str): given sensor
     - stations (list): list of all relevant stations
@@ -109,7 +110,8 @@ def SelectSensor(weekday, sensor, stations, sensor_dict, station_dict, lat_scale
 
         #Save te average passenger counts of given station
         passengers = passenger_df[(passenger_df["Station"] == station) & (
-            passenger_df["weekday"] == weekday)].reset_index()["Passengers"][0]
+            passenger_df["weekday"] == weekday) & 
+            (passenger_df["Hour"] == hour)].reset_index()["Passengers"][0]
 
         #Save unscaled station longitude and latitude in array
         x = np.array(station_dict[station]["Latitude"],
@@ -150,12 +152,12 @@ def constructSensorData(j, input_dict, date, sensor, sensor_dict, station_dict, 
     #Retrieve weekday number, whether the day is a weekend day, and the circular time of the given date
     weekday, is_weekend, time = TransformDate(date)
 
-    #Retrieve scaled sensor longitude and latitude, and all the weights and scores of the given stations
-    sensor_lon, sensor_lat, weights_dict = SelectSensor(weekday, sensor, stations, sensor_dict,
+    #Loop over all hours in day and save the needed features in dict
+    for i in range(len(time["Hour"])):
+        #Retrieve scaled sensor longitude and latitude, and all the weights and scores of the given stations
+        sensor_lon, sensor_lat, weights_dict = SelectSensor(time["Hour"][i], weekday, sensor, stations, sensor_dict,
                                                         station_dict, lat_scaler, lon_scaler, station_scaler, passenger_df)
 
-    #Loop over all hours in day and save the needed features in dict
-    for i in range(len(time["Hour Sin"])):
         input_dict[j] = {"weekday": weekday, "is_weekend": is_weekend, "LonScaled": sensor_lon,
                          "LatScaled": sensor_lat, "is_event": 0.0, "month_sin": time["Month Sin"],
                          "month_cos": time["Month Cos"], "day_sin": time["Day Sin"],
