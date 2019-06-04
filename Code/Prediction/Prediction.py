@@ -4,11 +4,12 @@ import random
 
 import Code.Prediction.GenerateData as pg 
 import Code.Prediction.importModels as im 
-import Code.Prediction.plotTimeSeries as timeSeries 
+
+import matplotlib.pyplot as plt
 
 
 def generatePredictions(sensors, model, stations, lat_scaler, lon_scaler, station_scaler, full_df, xgbr_model,
-                        passenger_df, output_dict, pred_dict):
+                        passenger_df, output_dict, pred_dict, params_dict):
     """
     This function generates crowdedness predictions for specified sensors and dates
 
@@ -68,12 +69,26 @@ def generatePredictions(sensors, model, stations, lat_scaler, lon_scaler, statio
 
     #Generate visualizations prediction
     if pred_dict["make_plot"]:
-        for date in dates:
+        plt.figure(figsize=(pred_dict["fig_x"], pred_dict["fig_y"]))
+        sensors = np.sort(sensors)
+        for sensor in sensors:
+            x = predict_df[predict_df["Sensor"] ==
+                           sensor]["CrowdednessCount"].values.reshape(-1, 1)
+            hour = predict_df["Hour"].unique().reshape(-1, 1)
 
-            series_df = predict_df[predict_df["Date"] == date].copy()
-            series_df.replace(2400, 0, inplace=True)
-            series_df.sort_values(by=["Hour", "Sensor"], inplace=True)
-            timeSeries.plotTimeSeries(series_df.drop(columns={"Date"}), date, output_dict)
+            plt.plot(hour, x, label=sensor)
+
+        if pred_dict["model"] in params_dict["clas_models"]:
+            plt.yticks(range(1, 5, 1), ("1", "2", "3", "4"))
+            
+        plt.legend(prop={"size": 15})
+        plt.xticks(range(0, 2400, 100), ("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13",
+                                         "14", "15", "16", "17", "18", "19", "20", "21", "22", "23"))
+        plt.xlabel("Hour")
+        plt.ylabel("Crowdedness Count")
+        plt.title("Time Series Crowdedness")
+
+        plt.savefig(output_dict["plots"] + "{0}_plot.png".format(pred_dict["model"]))
 
     return predict_df
 
@@ -99,10 +114,7 @@ def prediction(output_dict, params_dict, pred_dict, pbar, i):
     #Check if given parameter are valid
     if pred_dict["add_sensors"] == False and pred_dict["extra_coordinate"] == False:
         print("At least, either the custom coordinates or the sensors have to be added")
-    elif (params_dict["lon_min"] > pred_dict["extra_lon"]) or (params_dict["lon_max"] < pred_dict["extra_lon"]):
-        print("Custom Longitude is outside borders")
-    elif (params_dict["lat_min"] > pred_dict["extra_lat"]) or (params_dict["lat_max"] < pred_dict["extra_lat"]):
-        print("Custom Latitude is outside borders")
+        pbar.update(i+4)
     else:
         #If add sensors is true, import all present sensors of the full dataset
         if pred_dict["add_sensors"] == True:
@@ -126,7 +138,7 @@ def prediction(output_dict, params_dict, pred_dict, pbar, i):
 
         #Construct DF with generated predictions and needed input data for those predictions
         df = generatePredictions(sensors, model, stations, lat_scaler, lon_scaler, station_scaler, full_df, xgbr_model,
-                                 passenger_df, output_dict, pred_dict)
+                                 passenger_df, output_dict, pred_dict, params_dict)
 
         #Advanced iteration progressbar
         pbar.update(i+1)

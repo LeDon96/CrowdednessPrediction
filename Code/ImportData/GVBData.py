@@ -203,7 +203,7 @@ def averagePassengerCount(df, stations):
         average_df = average_df.merge(temp, how="outer", on=[
                     "weekday", "Hour", "Station", "Passengers"])
 
-    return df
+    return average_df
 
 
 def gvbDF(path_to_arr_data, path_to_dep_data, stations):

@@ -28,13 +28,13 @@
 'make_models': False,
 'gen_borders': False,
 'reg_models': [
-    'lr', 
-    'rfg', 
+    'lr',
+    'rfg',
     'xgbr'
 ], 
-'clas_models': [
-    'dc', 
-    'rfc', 
+'clas_models': [ 
+    'dc',
+    'rfc',
     'xgbc'
 ], 
 'lon_max': 4.9004405, 

@@ -109,8 +109,7 @@ def SelectSensor(hour, weekday, sensor, stations, sensor_dict, station_dict, lat
     for station in stations:
 
         #Save te average passenger counts of given station
-        passengers = passenger_df[(passenger_df["Station"] == station) & (
-            passenger_df["weekday"] == weekday) & 
+        passengers = passenger_df[(passenger_df["Station"] == station) & (passenger_df["weekday"] == weekday) & 
             (passenger_df["Hour"] == hour)].reset_index()["Passengers"][0]
 
         #Save unscaled station longitude and latitude in array

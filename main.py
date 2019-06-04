@@ -67,8 +67,7 @@ def main():
 
     #If models need to be constructed, iterations increase
     if params_dict["make_models"]:
-        max_value += 2 + \
-            len(params_dict["reg_models"]) + len(params_dict["clas_models"])
+        max_value += 2 + len(params_dict["reg_models"]) + len(params_dict["clas_models"])
 
     #Let the bar loop over all needed iterations
     for i in range(max_value):

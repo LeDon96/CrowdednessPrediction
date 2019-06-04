@@ -3,6 +3,8 @@
 "end_date": "2019-03-26",
 "add_sensors": True,
 "extra_coordinate": False,
-"extra_lon": 4.898,
-"extra_lat": 52.373,
-"make_plot": True}
+"extra_lon": 4.899847,
+"extra_lat": 52.374601,
+"make_plot": True,
+"fig_x": 10,
+"fig_y": 6}
