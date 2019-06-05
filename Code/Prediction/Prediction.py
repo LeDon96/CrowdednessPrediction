@@ -70,13 +70,22 @@ def generatePredictions(sensors, model, stations, lat_scaler, lon_scaler, statio
     #Generate visualizations prediction
     if pred_dict["make_plot"]:
         plt.figure(figsize=(pred_dict["fig_x"], pred_dict["fig_y"]))
-        sensors = np.sort(sensors)
-        for sensor in sensors:
-            x = predict_df[predict_df["Sensor"] ==
-                           sensor]["CrowdednessCount"].values.reshape(-1, 1)
-            hour = predict_df["Hour"].unique().reshape(-1, 1)
+        
+        if sensors.size > 1:
+            sensors = np.sort(sensors)
 
-            plt.plot(hour, x, label=sensor)
+            for sensor in sensors:
+                x = predict_df[predict_df["Sensor"] ==
+                            sensor]["CrowdednessCount"].values.reshape(-1, 1)
+                hour = predict_df["Hour"].unique().reshape(-1, 1)
+
+                plt.plot(hour, x, label=sensor)
+        
+        else:
+            x = predict_df["CrowdednessCount"].values
+            hour = predict_df["Hour"].unique()
+
+            plt.plot(hour, x, label=sensors)
 
         if pred_dict["model"] in params_dict["clas_models"]:
             plt.yticks(range(1, 5, 1), ("1", "2", "3", "4"))

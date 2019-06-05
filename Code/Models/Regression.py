@@ -26,7 +26,7 @@ def hyperParameter(x_train, y_train, score, model, model_name, cycles, **params)
     """
 
     #Call on the the hyper parameter fitting modle
-    hyp = RandomizedSearchCV(estimator=model, param_distributions=params, n_iter=cycles, scoring=score, n_jobs=4, cv=10,
+    hyp = RandomizedSearchCV(estimator=model, param_distributions=params, n_iter=cycles, scoring=score, n_jobs=-1, cv=10,
                             refit=score, random_state=42)
 
     #Run hyper parameter fitting

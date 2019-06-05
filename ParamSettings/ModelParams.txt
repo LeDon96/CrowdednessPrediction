@@ -32,8 +32,7 @@
         "max_depth": list(range(3, 10, 1)),
         "subsample": [0.8, 0.9],
         "colsample_bytree": [0.85, 0.9],
-        "gamma": [0, 1, 5],
-        "min_child_weight": list(range(1, 4, 1))
+        "gamma": [1]
         }},
 "dc":
     {"name": "Dummy Classifier",
@@ -69,8 +68,7 @@
         "max_depth": list(range(3, 10, 1)),
         "subsample": [0.8, 0.9],
         "colsample_bytree": [0.85, 0.9],
-        "gamma": [0, 1],
-        "min_child_weight": list(range(1, 4, 1))
+        "gamma": [1]
         }},
 "trainTest":
     {"size":  0.8
