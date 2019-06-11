@@ -12,7 +12,7 @@ from xgboost import XGBRegressor, XGBClassifier
 from sklearn.dummy import DummyClassifier
 from sklearn.ensemble import RandomForestClassifier
 
-def regressionModels(output_dict, params_dict, models_dict, kf, full_df, pbar, i):
+def regressionModels(output_dict, params_dict, models_dict, kf, full_df):
     """
     This function constructs the Regression models
 
@@ -22,8 +22,6 @@ def regressionModels(output_dict, params_dict, models_dict, kf, full_df, pbar, i
     - models_dict (dict): all parameters for the models
     - kf (model): KFold split dataset n times
     - full_df (df): Full dataset with all data
-    - pbar: Progress bar 
-    - i: current number of iteration the progress is at
 
     Returns:
     - Save models to pickle
@@ -52,18 +50,12 @@ def regressionModels(output_dict, params_dict, models_dict, kf, full_df, pbar, i
             train_dates, kf, models_dict[name]["cycles"], models_dict[name]["visualization"], models_dict[name]["params"], models_dict["KFold"]["size"],
             models_dict["saveResults"], output_dict["predictions"])
 
-        #Advanced iteration progressbar
-        pbar.update(i+1)
-
     #Save model results in dict
     df = pd.DataFrame.from_dict(metrics_dict, orient="index")
     df.to_csv(output_dict["reg_metrics"], index=True)
 
-    #Advanced iteration progressbar
-    pbar.update(i+1)
 
-
-def classificationModels(output_dict, params_dict, models_dict, kf, full_df, pbar, i):
+def classificationModels(output_dict, params_dict, models_dict, kf, full_df):
     """
     This function constructs the Classification models
 
@@ -73,8 +65,6 @@ def classificationModels(output_dict, params_dict, models_dict, kf, full_df, pba
     - models_dict (dict): all parameters for the models
     - kf (model): KFold split dataset n times
     - full_df (df): Full dataset with all data
-    - pbar: Progress bar 
-    - i: current number of iteration the progress is at
 
     Returns:
     - Save models to pickle
@@ -109,18 +99,12 @@ def classificationModels(output_dict, params_dict, models_dict, kf, full_df, pba
             train_dates, kf, models_dict[name]["cycles"], models_dict[name]["visualization"], models_dict[name]["params"], models_dict["KFold"]["size"],
             models_dict["saveResults"], output_dict["predictions"])
 
-        #Advanced iteration progressbar
-        pbar.update(i+1)
-
     #Save model results in dict
     df = pd.DataFrame.from_dict(metrics_dict, orient="index")
     df.to_csv(output_dict["clas_metrics"], index=True)
 
-    #Advanced iteration progressbar
-    pbar.update(i+1)
 
-
-def models(output_dict, params_dict, models_dict, pred_dict, pbar, i):
+def models(output_dict, params_dict, models_dict, pred_dict):
     """
     This function calls on functions to construct all the models
 
@@ -128,8 +112,6 @@ def models(output_dict, params_dict, models_dict, pred_dict, pbar, i):
     - output_dict (dict): all paths of where output files should be saved
     - params_dict (dict): all general hyperparameters that can be changed by user
     - models_dict (dict): all parameters for the models
-    - pbar: Progress bar 
-    - i: current number of iteration the progress is at
 
     Returns:
     - Saves constructed models
@@ -151,5 +133,5 @@ def models(output_dict, params_dict, models_dict, pred_dict, pbar, i):
         "index"])
 
     #Construct models
-    regressionModels(output_dict, params_dict, models_dict, kf, full_df, pbar, i)
-    classificationModels(output_dict, params_dict, models_dict, kf, full_df, pbar, i)
+    regressionModels(output_dict, params_dict, models_dict, kf, full_df)
+    classificationModels(output_dict, params_dict, models_dict, kf, full_df)

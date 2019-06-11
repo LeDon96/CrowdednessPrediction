@@ -69,7 +69,7 @@ def TransformTime(date):
             "Day Cos": day_cos, "Hour Sin": hour_sin, "Hour Cos": hour_cos, "Hour": hour_list}
 
 
-def SelectSensor(hour, weekday, sensor, stations, sensor_dict, station_dict, lat_scaler, lon_scaler, station_scaler, passenger_df):
+def SelectSensor(hour, weekday, sensor, stations, sensor_dict, station_dict, lat_scaler, lon_scaler, station_scaler, passenger_df, date):
     """
     This function returns the scaled coordinates of the given sensors and the weights and scores of the given stations,
     in relation to eah of the given sensors
@@ -105,12 +105,17 @@ def SelectSensor(hour, weekday, sensor, stations, sensor_dict, station_dict, lat
     #Dict to save station data in
     weights_dict = {}
 
+    passenger_df["Date"] = pd.to_datetime(
+        passenger_df["Date"], format="%Y-%m-%d")
+
+    passenger_df["DayOfYear"] = passenger_df["Date"].dt.dayofyear
+
     #Loop over al given stations
     for station in stations:
 
         #Save te average passenger counts of given station
-        passengers = passenger_df[(passenger_df["Station"] == station) & (passenger_df["weekday"] == weekday) & 
-            (passenger_df["Hour"] == hour)].reset_index()["Passengers"][0]
+        passengers = passenger_df[(passenger_df["DayOfYear"]== date.dayofyear) & (passenger_df["Station"] == station) & (passenger_df["Hour"] == hour)]
+        passengers = passengers["Passengers"].mean(axis=0)
 
         #Save unscaled station longitude and latitude in array
         x = np.array(station_dict[station]["Latitude"],
@@ -118,6 +123,7 @@ def SelectSensor(hour, weekday, sensor, stations, sensor_dict, station_dict, lat
 
         #Calculate rbf kernel between sensor and station longitude and latitude
         weight = rbf_kernel(x, y)[0, 0]
+        weight = station_scaler.transform(weight.reshape(-1, 1))
 
         #Save the station weight and score in dict
         weights_dict.update({station + " score": weight * passengers, 
@@ -155,7 +161,7 @@ def constructSensorData(j, input_dict, date, sensor, sensor_dict, station_dict, 
     for i in range(len(time["Hour"])):
         #Retrieve scaled sensor longitude and latitude, and all the weights and scores of the given stations
         sensor_lon, sensor_lat, weights_dict = SelectSensor(time["Hour"][i], weekday, sensor, stations, sensor_dict,
-                                                        station_dict, lat_scaler, lon_scaler, station_scaler, passenger_df)
+                                                            station_dict, lat_scaler, lon_scaler, station_scaler, passenger_df, date)
 
         input_dict[j] = {"weekday": weekday, "is_weekend": is_weekend, "LonScaled": sensor_lon,
                          "LatScaled": sensor_lat, "is_event": 0.0, "month_sin": time["Month Sin"],

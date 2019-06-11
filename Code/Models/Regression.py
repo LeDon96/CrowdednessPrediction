@@ -66,7 +66,7 @@ def trainModel(x_train, y_train, train_dates, kf, model, params, model_name, kf_
     #If model is baseline, don't include random state and n_jobs
     if model_name != "lr":
         params["random_state"] = 42
-        params["n_jobs"] = 4
+        params["n_jobs"] = -1
         model.set_params(**params)
     else:
         model.set_params(**params)

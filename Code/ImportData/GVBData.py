@@ -175,37 +175,6 @@ def transformDate(df, stations):
     return pd.DataFrame.from_dict(df_dict, orient="index")
 
 
-def averagePassengerCount(df, stations):
-    """
-    This function calculates the average passenger counts per station, per day
-
-    Parameters:
-    - df: DataFrame with all the GVB data
-    - stations: All the stations present in the GVB dataset
-
-    Returns: DF with average daily passenger counts per station
-    """
-
-    #DataFrame to save the average count per station
-    average_df = pd.DataFrame(columns=["weekday", "Hour", "Station", "Passengers"])
-
-    #Loop over given stations to save a df with mean passenger counts
-    for station in stations:
-        
-        temp = df.groupby(["weekday", "Hour"]).agg({station + " Arrivals": 'mean',
-                                                         station + " Departures": 'mean'}).reset_index()
-
-        temp["Station"] = station
-        temp["Passengers"] = temp[station + " Arrivals"] + \
-            temp[station + " Departures"]
-        temp = temp[["weekday", "Hour", "Station", "Passengers"]]
-
-        average_df = average_df.merge(temp, how="outer", on=[
-                    "weekday", "Hour", "Station", "Passengers"])
-
-    return average_df
-
-
 def gvbDF(path_to_arr_data, path_to_dep_data, stations):
     """
     This function constructs the full GVB dataset, by calling on all needed functions
@@ -228,7 +197,4 @@ def gvbDF(path_to_arr_data, path_to_dep_data, stations):
     #Transform the date objects of the DF to a consistent format
     df = transformDate(df, stations)
 
-    #Save average passenger counts per stations
-    average_df = averagePassengerCount(df, stations)
-
-    return df, average_df
+    return df

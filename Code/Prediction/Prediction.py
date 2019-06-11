@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 
 
 def generatePredictions(sensors, model, stations, lat_scaler, lon_scaler, station_scaler, full_df, xgbr_model,
-                        passenger_df, output_dict, pred_dict, params_dict):
+                        output_dict, pred_dict, params_dict, passenger_df):
     """
     This function generates crowdedness predictions for specified sensors and dates
 
@@ -43,7 +43,10 @@ def generatePredictions(sensors, model, stations, lat_scaler, lon_scaler, statio
     
     #Construct df with all needed input data to generate predictions
     df = pg.combineData(dates, sensors, sensor_dict, station_dict,
-                     stations, lat_scaler, lon_scaler, station_scaler, passenger_df)
+                        stations, lat_scaler, lon_scaler, station_scaler, passenger_df)
+
+    df.to_csv(output_dict["predictions"] +
+              "{0}_inputDF.csv".format(pred_dict["model"]), index=False)
     
     #Remove features that are not needed for the model to generate predictions
     input_df = df.drop(
@@ -60,7 +63,6 @@ def generatePredictions(sensors, model, stations, lat_scaler, lon_scaler, statio
     if xgbr_model:
         predict_dict["CrowdednessCount"] = model.predict(
             input_df.values)
-        predict_dict["CrowdednessCount"][predict_dict["CrowdednessCount"] < 0] = 0
     else:
         predict_dict["CrowdednessCount"] = model.predict(input_df)
 
@@ -101,7 +103,7 @@ def generatePredictions(sensors, model, stations, lat_scaler, lon_scaler, statio
 
     return predict_df
 
-def prediction(output_dict, params_dict, pred_dict, pbar, i):
+def prediction(output_dict, params_dict, pred_dict):
     """
     This function calls all function needed to return predictions crowdedness
 
@@ -109,13 +111,11 @@ def prediction(output_dict, params_dict, pred_dict, pbar, i):
     - output_dict (dict): all paths of output files
     - params_dict (dict): general hyperparameters
     - pred_dict (dict): hyperparameters prediction
-    - pbar (Bar): progressbar
-    - i (i): iteration progressbar
     """
 
     #Import needed csv files
     full_df = pd.read_csv(output_dict["full_df"])
-    passenger_df = pd.read_csv(output_dict["average_passenger_counts"])
+    passenger_df = pd.read_csv(output_dict["passenger_counts"])
 
     #Save needed stations
     stations = params_dict["stations"]
@@ -123,7 +123,6 @@ def prediction(output_dict, params_dict, pred_dict, pbar, i):
     #Check if given parameter are valid
     if pred_dict["add_sensors"] == False and pred_dict["extra_coordinate"] == False:
         print("At least, either the custom coordinates or the sensors have to be added")
-        pbar.update(i+4)
     else:
         #If add sensors is true, import all present sensors of the full dataset
         if pred_dict["add_sensors"] == True:
@@ -135,26 +134,14 @@ def prediction(output_dict, params_dict, pred_dict, pbar, i):
         else:
             sensors = np.array("Custom")
 
-        #Advanced iteration progressbar
-        pbar.update(i+1)
-
         #Import needed models
         model, lat_scaler, lon_scaler, station_scaler, xgbr_model = im.importModels(
             pred_dict["model"], output_dict)
 
-        #Advanced iteration progressbar
-        pbar.update(i+1)
-
         #Construct DF with generated predictions and needed input data for those predictions
         df = generatePredictions(sensors, model, stations, lat_scaler, lon_scaler, station_scaler, full_df, xgbr_model,
-                                 passenger_df, output_dict, pred_dict, params_dict)
-
-        #Advanced iteration progressbar
-        pbar.update(i+1)
+                                 output_dict, pred_dict, params_dict, passenger_df)
 
         #Save prediction data to CSV
         df.to_csv(output_dict["predictions"] +
                   "{0}_Predictions.csv".format(pred_dict["model"]), index=False)
-
-        #Advanced iteration progressbar
-        pbar.update(i+1)
