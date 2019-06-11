@@ -24,7 +24,7 @@
     'Spui', 
     'Centraal Station'
 ], 
-'make_fullDF': False, 
+'make_fullDF': True, 
 'make_models': False,
 'gen_borders': False,
 'reg_models': [
