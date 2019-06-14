@@ -24,9 +24,11 @@
     'Spui', 
     'Centraal Station'
 ], 
-'make_fullDF': True, 
-'make_models': False,
+'make_fullDF': False, 
+'make_models': True,
 'gen_borders': False,
+'remove_sensor': False, 
+'sensor_to_remove': "GAWW-01",
 'reg_models': [
     'lr',
     'rfg',

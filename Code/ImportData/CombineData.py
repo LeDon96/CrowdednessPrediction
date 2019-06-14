@@ -122,16 +122,16 @@ def calculateWeights(stations, df):
     for sensor in sensors:
 
         #Make an array with the latitude and longitude of the sensor
-        y = np.array([df[df["Sensor"] == sensor].reset_index()["Latscaled"][0],
-                      df[df["Sensor"] == sensor].reset_index()["Lonscaled"][0]]).reshape(1, -1)
+        y = np.array(df[df["Sensor"] == sensor].reset_index()["Latscaled"][0],
+                      df[df["Sensor"] == sensor].reset_index()["Lonscaled"][0]).reshape(-1, 1)
 
         station_weights = {}
         #Loop over all stations
         for station in stations:
 
             #Make an array with the latitude and longitude of the station
-            x = np.array([df[station + " LatScaled"][0],
-                          df[station + " LonScaled"][0]]).reshape(1, -1)
+            x = np.array(df[station + " LatScaled"][0],
+                          df[station + " LonScaled"][0]).reshape(1, -1)
 
             #Add station weight
             station_weights[station + " weight"] = rbf_kernel(x, y)
@@ -237,11 +237,11 @@ def constructFullDF(sensor_df, gvb_df, event_df, stations, lat_scaler_filename, 
         for station in stations:
 
             #Add a station score, which is the weight multiplied with total passengers
-            v[station + " score"] = float(station_weights[v["Sensor"]][station + " weight"] * (
-                v[station + " Arrivals"] + v[station + " Departures"]))
+            v[station + " score"] = station_weights[v["Sensor"]][station + " weight"][0][0] * (
+                v[station + " Arrivals"] + v[station + " Departures"])
 
             #Add station weight
-            v[station + " weight"] = station_weights[v["Sensor"]][station + " weight"]
+            v[station + " weight"] = station_weights[v["Sensor"]][station + " weight"][0][0]
 
             v[station + " passengers"] = v[station +
                                            " Arrivals"] + v[station + " Departures"]

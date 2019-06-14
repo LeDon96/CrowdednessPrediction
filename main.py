@@ -74,8 +74,8 @@ def main():
         #Construct models
         models(output_dict, params_dict, models_dict, pred_dict)
 
-    # #Generate Predictions
-    # prediction(output_dict, params_dict, pred_dict)
+    #Generate Predictions
+    prediction(output_dict, params_dict, pred_dict)
 
 if __name__ == '__main__':
     main()

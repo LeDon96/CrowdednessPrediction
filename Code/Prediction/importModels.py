@@ -17,7 +17,7 @@ def importModels(model, output_dict):
     """
 
     #Check whether xgbr model will be used
-    xgbr_model = False
+    xgb_model = False
 
     #Import needed model
     if model == "rfg":
@@ -26,13 +26,14 @@ def importModels(model, output_dict):
     elif model == "xgbr":
         model = pickle.load(
             open(output_dict["xgbr_model"], 'rb'))
-        xgbr_model = True
+        xgb_model = True
     elif model == "rfc":
         model = pickle.load(
             open(output_dict["rfc_model"], 'rb'))
     elif model == "xgbc":
         model = pickle.load(
             open(output_dict["xgbc_model"], 'rb'))
+        xgb_model = True
     elif model == "lr":
         model = pickle.load(
             open(output_dict["lr_model"], 'rb'))
@@ -48,8 +49,4 @@ def importModels(model, output_dict):
     lon_scaler = pickle.load(
         open(output_dict["lon_scaler"], 'rb'))
 
-    #Import scaler for station data
-    station_scaler = pickle.load(
-        open(output_dict["station_scaler"], 'rb'))
-
-    return model, lat_scaler, lon_scaler, station_scaler, xgbr_model
+    return model, lat_scaler, lon_scaler, xgb_model

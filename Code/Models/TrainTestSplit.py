@@ -72,7 +72,7 @@ def dateSplit(df, size):
     return train_dates, eval_dates
 
 
-def trainTestSplit(df, size, stations):
+def trainTestSplit(df, size):
     """
     This function splits the given df into a train and test set, based on dates
 
@@ -86,9 +86,6 @@ def trainTestSplit(df, size, stations):
 
     df = df.drop(columns=["Hour", "Sensor", "Year",
                           "SensorLongitude", "SensorLatitude"])
-
-    for station in stations:
-        df.drop(columns={station + " Lon", station + " Lat", station + " passengers"}, inplace=True)
 
     #Split Train/Test based on dates
     train_dates, eval_dates = dateSplit(df, size)

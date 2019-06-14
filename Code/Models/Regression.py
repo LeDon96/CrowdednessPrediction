@@ -26,7 +26,7 @@ def hyperParameter(x_train, y_train, score, model, model_name, cycles, **params)
     """
 
     #Call on the the hyper parameter fitting modle
-    hyp = RandomizedSearchCV(estimator=model, param_distributions=params, n_iter=cycles, scoring=score, n_jobs=-1, cv=10,
+    hyp = RandomizedSearchCV(estimator=model, param_distributions=params, n_iter=cycles, scoring=score, n_jobs=4, cv=10,
                             refit=score, random_state=42)
 
     #Run hyper parameter fitting
@@ -66,7 +66,7 @@ def trainModel(x_train, y_train, train_dates, kf, model, params, model_name, kf_
     #If model is baseline, don't include random state and n_jobs
     if model_name != "lr":
         params["random_state"] = 42
-        params["n_jobs"] = -1
+        params["n_jobs"] = 4
         model.set_params(**params)
     else:
         model.set_params(**params)
@@ -114,7 +114,7 @@ def trainModel(x_train, y_train, train_dates, kf, model, params, model_name, kf_
     return mean_score, mean_rmse, model
 
 
-def evalModel(model, x_eval, y_eval, visualization, plot_dir, model_name, x_train, y_train, saveResults, pred_output):
+def evalModel(model, x_eval, y_eval, plot_dir, model_name, x_train, y_train, pred_output):
     """
     This function evaluates the trained model on unseen data
 
@@ -133,10 +133,6 @@ def evalModel(model, x_eval, y_eval, visualization, plot_dir, model_name, x_trai
     - RMSE score of the model
     """
 
-    if saveResults:
-        lon = x_eval["LonScaled"]
-        lat = x_eval["LatScaled"]
-
     #Calculate R2 score and RMSE
     ## XGB Regressor model only takes values as input
     if model_name == "xgbr":
@@ -149,33 +145,11 @@ def evalModel(model, x_eval, y_eval, visualization, plot_dir, model_name, x_trai
 
         y_pred_eval_model = model.predict(x_eval)
         eval_model_mse = mean_squared_error(y_pred_eval_model, y_eval)
-
-    #Visualize the model results
-    if visualization == True:
-        visualizer = PredictionError(model)
-        # Fit the training data to the visualizer
-
-        ## XGB Regressor model only takes values as input
-        if model_name == "xgbr":
-            visualizer.fit(x_train.drop(
-                columns={"Date"}).values, y_train["CrowdednessCount"].values)
-            visualizer.score(x_eval.values, y_eval.values)  # Evaluate the model on the test data
-        else: 
-            visualizer.fit(x_train.drop(columns={"Date"}), y_train["CrowdednessCount"])
-            visualizer.score(x_eval, y_eval)  # Evaluate the model on the test data
-        visualizer.poof("{0}{1}.png".format(plot_dir, model_name))
-        plt.gcf().clear()
-
-    if saveResults:
-        save_dict = {"Lat": lat, "Lon": lon,
-                     "True": y_eval, "Pred": pd.Series(y_pred_eval_model)}
-        save_df = pd.DataFrame.from_dict(save_dict, orient="columns")
-        save_df.to_csv(pred_output + "{0}_evalResults.csv".format(model_name), index=False)
         
     return eval_model_score, np.sqrt(eval_model_mse)
 
-def modelConstruction(model_dir, plot_dir, model_name, model, x_train, y_train, x_eval, y_eval, score, train_dates, kf, cycles, visualization, params, kf_size, 
-                      saveResults, pred_output):
+def modelConstruction(model_dir, plot_dir, model_name, model, x_train, y_train, x_eval, y_eval, score, train_dates, kf, cycles, params, kf_size, 
+                      pred_output, remove_sensor):
     """
     This function trains a linear regression model
 
@@ -218,14 +192,19 @@ def modelConstruction(model_dir, plot_dir, model_name, model, x_train, y_train, 
 
     #Evaluate the model
     eval_score, eval_mse = evalModel(
-        model, x_eval, y_eval, visualization, plot_dir, model_name, x_train, y_train, saveResults, pred_output)
+        model, x_eval, y_eval, plot_dir, model_name, x_train, y_train, pred_output)
     
     #Save results evaluation
     results_dict["Test R2 Score"] = eval_score
     results_dict["Test RMSE Score"] = eval_mse
 
     #Save the model
-    filename = "{0}{1}_model.sav".format(model_dir, model_name)
+    #Save model as pickle
+    if remove_sensor:
+        filename = "{0}{1}_model_generalize.sav".format(model_dir, model_name)
+    else:
+        filename = "{0}{1}_model.sav".format(model_dir, model_name)
+    
     pickle.dump(model, open(filename, 'wb'))
 
     return results_dict

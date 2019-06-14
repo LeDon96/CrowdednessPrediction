@@ -69,7 +69,7 @@ def TransformTime(date):
             "Day Cos": day_cos, "Hour Sin": hour_sin, "Hour Cos": hour_cos, "Hour": hour_list}
 
 
-def SelectSensor(hour, weekday, sensor, stations, sensor_dict, station_dict, lat_scaler, lon_scaler, station_scaler, passenger_df, date):
+def SelectSensor(sensor,hour, weekday, stations, sensor_dict, lat_scaler, lon_scaler, full_df, date):
     """
     This function returns the scaled coordinates of the given sensors and the weights and scores of the given stations,
     in relation to eah of the given sensors
@@ -94,45 +94,44 @@ def SelectSensor(hour, weekday, sensor, stations, sensor_dict, station_dict, lat
 
     #Scale the sensor longitude and latitude
     lon_scaled = lon_scaler.transform(
-        sensor_dict[sensor]["Longitude"].reshape(-1, 1))[0, 0]
+        sensor_dict["Longitude"].reshape(1, -1))
     lat_scaled = lat_scaler.transform(
-        sensor_dict[sensor]["Latitude"].reshape(-1, 1))[0, 0]
+        sensor_dict["Latitude"].reshape(1, -1))
 
     #Save the unscaled sensor longitude and latitude in array
-    y = np.array(sensor_dict[sensor]["Latitude"],
-                 sensor_dict[sensor]["Longitude"]).reshape(1, -1)
+    y = np.array((lat_scaled, lon_scaled)).reshape(-1, 1)
     
     #Dict to save station data in
     weights_dict = {}
+    coor_dict = {}
 
-    passenger_df["Date"] = pd.to_datetime(
-        passenger_df["Date"], format="%Y-%m-%d")
-
-    passenger_df["DayOfYear"] = passenger_df["Date"].dt.dayofyear
+    full_df["Date"] = pd.to_datetime(
+        full_df["Date"], format="%Y-%m-%d")
+    
+    df = full_df[(full_df["Date"] == date) & (full_df["Hour"] == hour) & (full_df["Sensor"] == sensor)].reset_index()
 
     #Loop over al given stations
     for station in stations:
-
         #Save te average passenger counts of given station
-        passengers = passenger_df[(passenger_df["DayOfYear"]== date.dayofyear) & (passenger_df["Station"] == station) & (passenger_df["Hour"] == hour)]
-        passengers = passengers["Passengers"].mean(axis=0)
+        passengers = df[station + " passengers"][0]
 
         #Save unscaled station longitude and latitude in array
-        x = np.array(station_dict[station]["Latitude"],
-                     station_dict[station]["Longitude"]).reshape(1, -1)
+        x = np.array(df[station + " LatScaled"][0],
+                        df[station + " LonScaled"][0]).reshape(1, -1)
+        coor_dict[station + " LatScaled"] = df[station + " LatScaled"][0]
+        coor_dict[station + " LonScaled"] = df[station + " LonScaled"][0]
 
         #Calculate rbf kernel between sensor and station longitude and latitude
-        weight = rbf_kernel(x, y)[0, 0]
-        weight = station_scaler.transform(weight.reshape(-1, 1))
+        weight = rbf_kernel(x, y)
 
         #Save the station weight and score in dict
-        weights_dict.update({station + " score": weight * passengers, 
-                            station + " weight": weight})
+        weights_dict.update({station + " score": (weight[0][0] * passengers + weight[0][1] * passengers)/2,
+                            station + " weight": (weight[0][0] + weight[0][1])/2})
 
-    return lon_scaled, lat_scaled, weights_dict
+    return lon_scaled, lat_scaled, weights_dict, coor_dict
 
 
-def constructSensorData(j, input_dict, date, sensor, sensor_dict, station_dict, stations, lat_scaler, lon_scaler, station_scaler, passenger_df):
+def constructSensorData(j, input_dict, date, sensor, sensor_dict, stations, lat_scaler, lon_scaler, full_df):
     """
     This function returns all features needed for a prediction, given a singel sensor and date
 
@@ -160,25 +159,29 @@ def constructSensorData(j, input_dict, date, sensor, sensor_dict, station_dict, 
     #Loop over all hours in day and save the needed features in dict
     for i in range(len(time["Hour"])):
         #Retrieve scaled sensor longitude and latitude, and all the weights and scores of the given stations
-        sensor_lon, sensor_lat, weights_dict = SelectSensor(time["Hour"][i], weekday, sensor, stations, sensor_dict,
-                                                            station_dict, lat_scaler, lon_scaler, station_scaler, passenger_df, date)
+        sensor_lon, sensor_lat, weights_dict, coor_dict = SelectSensor(sensor, time["Hour"][i], weekday, stations, sensor_dict,
+                                                            lat_scaler, lon_scaler, full_df, date)
 
-        input_dict[j] = {"weekday": weekday, "is_weekend": is_weekend, "LonScaled": sensor_lon,
-                         "LatScaled": sensor_lat, "is_event": 0.0, "month_sin": time["Month Sin"],
-                         "month_cos": time["Month Cos"], "day_sin": time["Day Sin"],
-                         "day_cos": time["Day Cos"], "hour_sin": time["Hour Sin"][i],
-                         "hour_cos": time["Hour Cos"][i], "hour": time["Hour"][i],
-                         "Sensor": sensor, "Date": date, "SensorLongitude": sensor_dict[sensor]["Longitude"],
-                         "SensorLatitude": sensor_dict[sensor]["Latitude"]}
+        input_dict[j] = {"weekday": weekday, "is_weekend": is_weekend, "is_event": 0.0, 
+                         "month_sin": time["Month Sin"], "month_cos": time["Month Cos"], 
+                         "day_sin": time["Day Sin"],"day_cos": time["Day Cos"], "hour_sin": time["Hour Sin"][i],
+                         "hour_cos": time["Hour Cos"][i]}
 
         input_dict[j].update(weights_dict)
+
+        input_dict[j].update({"LatScaled": sensor_lat, "LonScaled": sensor_lon,
+                              "hour": time["Hour"][i],
+                              "Sensor": sensor, "Date": date, "SensorLongitude": sensor_dict["Longitude"],
+                              "SensorLatitude": sensor_dict["Latitude"]})
+        
+        input_dict[j].update(coor_dict)
 
         j += 1
 
     return j, input_dict
 
 
-def combineData(dates, sensors, sensor_dict, station_dict, stations, lat_scaler, lon_scaler, station_scaler, passenger_df):
+def combineData(dates, sensor, sensor_dict, stations, lat_scaler, lon_scaler, full_df):
     """
     This function constructs dict with all needed data to generate needed predictions
 
@@ -202,18 +205,9 @@ def combineData(dates, sensors, sensor_dict, station_dict, stations, lat_scaler,
     j = 0
 
     #Check the size of the given sensors and dates and generate the appropriate data
-    if sensors.size == 1:
-        sensor = np.array2string(sensors).replace("'", "")
-
-        for date in dates:
-            j, input_dict = constructSensorData(j, input_dict, date, sensor, sensor_dict, station_dict, stations, lat_scaler,
-                                                lon_scaler, station_scaler, passenger_df)
-
-    else:
-        for sensor in sensors:
-            for date in dates:
-                j, input_dict = constructSensorData(j, input_dict, date, sensor, sensor_dict, station_dict, stations, lat_scaler,
-                                                    lon_scaler, station_scaler, passenger_df)
+    for date in dates:
+        j, input_dict = constructSensorData(j, input_dict, date, sensor, sensor_dict, stations, lat_scaler,
+                                            lon_scaler, full_df)
 
     return pd.DataFrame.from_dict(input_dict, orient="index")
 
@@ -244,7 +238,7 @@ def generateDates(start_date, end_date):
 
     return dates
 
-def defineCoordinates(sensors, stations, add_sensors, extra_cor, extra_lon, extra_lat, full_df):
+def defineCoordinates(add_sensors, full_df):
     """
     This function saves all needed coordinates for predicion
 
@@ -262,22 +256,7 @@ def defineCoordinates(sensors, stations, add_sensors, extra_cor, extra_lon, extr
     - station_dict (dict): Longitude and Latitude each given station
     """
 
-    sensor_dict = {}
-    station_dict = {}
+    sensor_dict = {"Longitude": full_df[full_df["Sensor"] == add_sensors].reset_index()["SensorLongitude"][0],
+                                "Latitude": full_df[full_df["Sensor"] == add_sensors].reset_index()["SensorLatitude"][0]}
 
-    if add_sensors == True:
-
-        for sensor in sensors:
-            if sensor != "Custom":
-                sensor_dict[sensor] = {"Longitude": full_df[full_df["Sensor"] == sensor].reset_index()["SensorLongitude"][0],
-                                       "Latitude": full_df[full_df["Sensor"] == sensor].reset_index()["SensorLatitude"][0]}
-
-    if extra_cor == True:
-        sensor_dict["Custom"] = {"Longitude": np.float64(
-            extra_lon), "Latitude": np.float64(extra_lat)}
-
-    for station in stations:
-        station_dict[station] = {
-            "Longitude": full_df[station + " Lon"][0], "Latitude": full_df[station + " Lat"][0]}
-
-    return sensor_dict, station_dict
+    return sensor_dict

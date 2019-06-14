@@ -31,9 +31,22 @@ def regressionModels(output_dict, params_dict, models_dict, kf, full_df):
     #Dict to save model results in
     metrics_dict = {}
 
+    if params_dict["remove_sensor"]:
+        x_train = full_df[full_df["Sensor"] != params_dict["sensor_to_remove"]].drop(
+            columns=["CrowdednessCount"])
+        y_train = full_df[full_df["Sensor"] !=
+                          params_dict["sensor_to_remove"]][["Date", "CrowdednessCount"]]
+
+        train_dates = full_df["Date"].unique()
+
+        x_eval = full_df[full_df["Sensor"] == params_dict["sensor_to_remove"]].drop(
+            columns=["Date", "CrowdednessCount"])
+        y_eval = full_df[full_df["Sensor"] ==
+                          params_dict["sensor_to_remove"]]["CrowdednessCount"]
+    
     #Split date into train and evaluation
     x_train, y_train, x_eval, y_eval, train_dates = trainTestSplit(
-        full_df, models_dict["trainTest"]["size"], params_dict["stations"])
+        full_df, models_dict["trainTest"]["size"])
 
     #Loop over all needed model ID's and select the model based on the ID
     for name in params_dict["reg_models"]:
@@ -47,13 +60,16 @@ def regressionModels(output_dict, params_dict, models_dict, kf, full_df):
         #Construct the model and save the model results
         metrics_dict[name] = reg.modelConstruction(
             output_dict["models"], output_dict["plots"], name, model, x_train, y_train, x_eval, y_eval, models_dict[name]["score"],
-            train_dates, kf, models_dict[name]["cycles"], models_dict[name]["visualization"], models_dict[name]["params"], models_dict["KFold"]["size"],
-            models_dict["saveResults"], output_dict["predictions"])
+            train_dates, kf, models_dict[name]["cycles"], models_dict[name]["params"], models_dict["KFold"]["size"],
+            output_dict["predictions"], params_dict["remove_sensor"])
 
     #Save model results in dict
     df = pd.DataFrame.from_dict(metrics_dict, orient="index")
-    df.to_csv(output_dict["reg_metrics"], index=True)
 
+    if params_dict["remove_sensor"]:
+        df.to_csv(output_dict["gen_reg_metrics"], index=True)
+    else:
+        df.to_csv(output_dict["reg_metrics"], index=True)
 
 def classificationModels(output_dict, params_dict, models_dict, kf, full_df):
     """
@@ -80,9 +96,22 @@ def classificationModels(output_dict, params_dict, models_dict, kf, full_df):
     #Convert the numerical crowdednessCounts to class labels
     class_df = classCrowdednessCounts(full_df)
 
+    if params_dict["remove_sensor"]:
+        x_train = class_df[class_df["Sensor"] != params_dict["sensor_to_remove"]].drop(
+            columns=["CrowdednessCount"])
+        y_train = class_df[class_df["Sensor"] !=
+                          params_dict["sensor_to_remove"]][["Date", "CrowdednessCount"]]
+
+        train_dates = class_df["Date"].unique()
+
+        x_eval = class_df[class_df["Sensor"] == params_dict["sensor_to_remove"]].drop(
+            columns=["Date", "CrowdednessCount"])
+        y_eval = class_df[class_df["Sensor"] ==
+                         params_dict["sensor_to_remove"]]["CrowdednessCount"]
+
     #Split date into train and evaluation
     x_train, y_train, x_eval, y_eval, train_dates = trainTestSplit(
-        class_df, models_dict["trainTest"]["size"], params_dict["stations"])
+        class_df, models_dict["trainTest"]["size"])
 
     #Loop over all needed model ID's and select the model based on the ID
     for name in params_dict["clas_models"]:
@@ -96,12 +125,16 @@ def classificationModels(output_dict, params_dict, models_dict, kf, full_df):
         #Construct the model and save the model results
         metrics_dict[name] = clas.modelConstruction(
             output_dict["models"], output_dict["plots"], name, model, labels, x_train, y_train, x_eval, y_eval, models_dict[name]["score"],
-            train_dates, kf, models_dict[name]["cycles"], models_dict[name]["visualization"], models_dict[name]["params"], models_dict["KFold"]["size"],
-            models_dict["saveResults"], output_dict["predictions"])
+            train_dates, kf, models_dict[name]["cycles"], models_dict[name]["params"], models_dict["KFold"]["size"],
+            output_dict["predictions"], params_dict["remove_sensor"])
 
     #Save model results in dict
     df = pd.DataFrame.from_dict(metrics_dict, orient="index")
-    df.to_csv(output_dict["clas_metrics"], index=True)
+
+    if params_dict["remove_sensor"]:
+        df.to_csv(output_dict["gen_clas_metrics"], index=True)
+    else:
+        df.to_csv(output_dict["clas_metrics"], index=True)
 
 
 def models(output_dict, params_dict, models_dict, pred_dict):
@@ -125,13 +158,18 @@ def models(output_dict, params_dict, models_dict, pred_dict):
     #Import Dataset
     full_df = pd.read_csv(output_dict["full_df"])
 
-    #Remove dates dataset used in prediction
-    split_date = pd.to_datetime(pred_dict["start_date"], format="%Y-%m-%d")
-    full_df["Date"] = pd.to_datetime(
-        full_df["Date"], format="%Y-%m-%d")
-    full_df = full_df[full_df["Date"] <= split_date].reset_index().drop(columns=[
-        "index"])
+    for station in params_dict["stations"]:
+        full_df.drop(columns={station + " Lon", station + " Lat",
+                         station + " passengers"}, inplace=True)
+
+    if not params_dict["remove_sensor"]:
+        #Remove dates dataset used in prediction
+        split_date = pd.to_datetime(pred_dict["start_date"], format="%Y-%m-%d")
+        full_df["Date"] = pd.to_datetime(
+            full_df["Date"], format="%Y-%m-%d")
+        full_df = full_df[full_df["Date"] <= split_date].reset_index().drop(columns=[
+            "index"])
 
     #Construct models
-    regressionModels(output_dict, params_dict, models_dict, kf, full_df)
+    # regressionModels(output_dict, params_dict, models_dict, kf, full_df)
     classificationModels(output_dict, params_dict, models_dict, kf, full_df)
