@@ -2,7 +2,7 @@
 import pandas as pd
 import numpy as np
 import pickle
-from sklearn.metrics.pairwise import rbf_kernel
+from sklearn.metrics.pairwise import rbf_kernel 
 from sklearn.preprocessing import StandardScaler
 
 def strToTimestamp(df, format):
@@ -122,16 +122,16 @@ def calculateWeights(stations, df):
     for sensor in sensors:
 
         #Make an array with the latitude and longitude of the sensor
-        y = np.array(df[df["Sensor"] == sensor].reset_index()["Latscaled"][0],
-                      df[df["Sensor"] == sensor].reset_index()["Lonscaled"][0]).reshape(-1, 1)
+        x = np.array(df[df["Sensor"] == sensor].reset_index()["SensorLatitude"][0],
+                     df[df["Sensor"] == sensor].reset_index()["SensorLongitude"][0]).reshape(1, -1)
 
         station_weights = {}
         #Loop over all stations
         for station in stations:
 
             #Make an array with the latitude and longitude of the station
-            x = np.array(df[station + " LatScaled"][0],
-                          df[station + " LonScaled"][0]).reshape(1, -1)
+            y = np.array(df[station + " Lat"][0],
+                          df[station + " Lon"][0]).reshape(1, -1)
 
             #Add station weight
             station_weights[station + " weight"] = rbf_kernel(x, y)
@@ -184,7 +184,6 @@ def constructFullDF(sensor_df, gvb_df, event_df, stations, lat_scaler_filename, 
     lons.append(full_df["SensorLongitude"].values)
 
     for station in stations:
-        full_df[station + " score"] = 0
         full_df[station + " weight"] = 0
         full_df[station + " passengers"] = 0
         lats.append(full_df[station + " Lat"].values)
@@ -196,8 +195,8 @@ def constructFullDF(sensor_df, gvb_df, event_df, stations, lat_scaler_filename, 
     lons = np.asarray(lons).reshape(-1, 1)
     lonscaler.fit(lons)
 
-    pickle.dump(latscaler, open(lat_scaler_filename, 'wb'))
-    pickle.dump(lonscaler, open(lon_scaler_filename, 'wb'))
+    # pickle.dump(latscaler, open(lat_scaler_filename, 'wb'))
+    # pickle.dump(lonscaler, open(lon_scaler_filename, 'wb'))
 
     full_df["Latscaled"] = latscaler.transform(
         full_df["SensorLatitude"].values.reshape(-1, 1))
@@ -210,12 +209,12 @@ def constructFullDF(sensor_df, gvb_df, event_df, stations, lat_scaler_filename, 
         full_df[station + " LonScaled"] = lonscaler.transform(
             full_df[station + " Lon"].values.reshape(-1, 1))
 
-    #################################################################################
+    # #################################################################################
 
-    #Construct dict with station weigths
+    # #Construct dict with station weigths
     station_weights = calculateWeights(stations, full_df)
 
-    #################################################################################
+    # #################################################################################
 
     #Transform DF to Dict
     time_dict = full_df.to_dict("index")
@@ -235,11 +234,6 @@ def constructFullDF(sensor_df, gvb_df, event_df, stations, lat_scaler_filename, 
 
         #Loop over all stations
         for station in stations:
-
-            #Add a station score, which is the weight multiplied with total passengers
-            v[station + " score"] = station_weights[v["Sensor"]][station + " weight"][0][0] * (
-                v[station + " Arrivals"] + v[station + " Departures"])
-
             #Add station weight
             v[station + " weight"] = station_weights[v["Sensor"]][station + " weight"][0][0]
 
@@ -250,9 +244,9 @@ def constructFullDF(sensor_df, gvb_df, event_df, stations, lat_scaler_filename, 
     full_df = pd.DataFrame.from_dict(
         time_dict, orient="index").reset_index().drop(columns="index")
 
-    #################################################################################
+    # #################################################################################
 
-    #Drop nonrelevant columns
+    # #Drop nonrelevant columns
     for station in stations:
         full_df.drop(columns={station + " Arrivals",
                               station + " Departures"}, inplace=True)

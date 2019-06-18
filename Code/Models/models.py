@@ -171,5 +171,5 @@ def models(output_dict, params_dict, models_dict, pred_dict):
             "index"])
 
     #Construct models
-    # regressionModels(output_dict, params_dict, models_dict, kf, full_df)
+    regressionModels(output_dict, params_dict, models_dict, kf, full_df)
     classificationModels(output_dict, params_dict, models_dict, kf, full_df)

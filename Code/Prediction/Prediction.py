@@ -39,26 +39,31 @@ def generatePredictions(model, stations, lat_scaler, lon_scaler, full_df, xgb_mo
 
     if pred_dict["generate_df"]:
         #Construct dicts with longitude and latitude given sensors and stations
-        sensor_dict = pg.defineCoordinates(pred_dict["add_sensors"], full_df)
+        sensor_dict = pg.defineCoordinates(pred_dict["add_sensor"], full_df)
         
         #Construct df with all needed input data to generate predictions
-        df = pg.combineData(dates, pred_dict["add_sensors"], sensor_dict,
+        df = pg.combineData(dates, pred_dict["add_sensor"], sensor_dict,
                             stations, lat_scaler, lon_scaler, full_df)
     
     elif pred_dict["generalized_df"]:
         df = full_df[full_df["Sensor"] == params_dict["sensor_to_remove"]]
     
     else:
+        full_df["Date"] = pd.to_datetime(full_df["Date"], format="%Y-%m-%d")
         df = full_df[(full_df["Date"].isin(dates)) & (
-            full_df["Sensor"] == pred_dict["add_sensors"])]
+            full_df["Sensor"] == pred_dict["add_sensor"])]
+        df.drop(columns=["CrowdednessCount", "Year"], inplace=True)
+
+        for station in stations:
+            df.drop(columns=[station + " Lon", station + " Lat", station + " passengers"], inplace=True)
         
     #Remove features that are not needed for the model to generate predictions
     input_df = df.drop(
-        columns={"hour", "Sensor", "Date", "SensorLongitude", "SensorLatitude"}).copy()
+        columns=["Hour", "Sensor", "Date", "SensorLongitude", "SensorLatitude"]).copy()
 
     #Save needed features for visualization and understanding
     predict_dict["Date"] = df["Date"].copy()
-    predict_dict["Hour"] = df["hour"].copy()
+    predict_dict["Hour"] = df["Hour"].copy()
     predict_dict["Sensor"] = df["Sensor"].copy()
     predict_dict["SensorLongitude"] = df["SensorLongitude"].copy()
     predict_dict["SensorLatitude"] = df["SensorLatitude"].copy()

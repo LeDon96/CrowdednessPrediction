@@ -170,7 +170,7 @@ def constructSensorData(j, input_dict, date, sensor, sensor_dict, stations, lat_
         input_dict[j].update(weights_dict)
 
         input_dict[j].update({"LatScaled": sensor_lat, "LonScaled": sensor_lon,
-                              "hour": time["Hour"][i],
+                              "Hour": time["Hour"][i],
                               "Sensor": sensor, "Date": date, "SensorLongitude": sensor_dict["Longitude"],
                               "SensorLatitude": sensor_dict["Latitude"]})
         
@@ -238,7 +238,7 @@ def generateDates(start_date, end_date):
 
     return dates
 
-def defineCoordinates(add_sensors, full_df):
+def defineCoordinates(add_sensor, full_df):
     """
     This function saves all needed coordinates for predicion
 
@@ -256,7 +256,7 @@ def defineCoordinates(add_sensors, full_df):
     - station_dict (dict): Longitude and Latitude each given station
     """
 
-    sensor_dict = {"Longitude": full_df[full_df["Sensor"] == add_sensors].reset_index()["SensorLongitude"][0],
-                                "Latitude": full_df[full_df["Sensor"] == add_sensors].reset_index()["SensorLatitude"][0]}
+    sensor_dict = {"Longitude": full_df[full_df["Sensor"] == add_sensor].reset_index()["SensorLongitude"][0],
+                                "Latitude": full_df[full_df["Sensor"] == add_sensor].reset_index()["SensorLatitude"][0]}
 
     return sensor_dict
