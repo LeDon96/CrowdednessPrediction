@@ -23,8 +23,8 @@ def constructDF(input_dict, output_dict, params_dict):
     """
 
     #Constructs the sensor datast
-    sensor_df = sd.sensorDF(input_dict["coordinateData"], input_dict["blipData"],params_dict["needed_sensors"],
-                            input_dict["sensorData"], params_dict["gaww_02"], params_dict["gaww_03"])
+    sensor_df = sd.sensorDF(input_dict["sensorData"],input_dict["coordinateData"], input_dict["blipData"], params_dict["needed_sensors"],
+                            params_dict["gaww_02"], params_dict["gaww_03"])
 
     #Constructs the GVB dataset and dataset with all average passenger counts
     gvb_df = gvb.gvbDF(

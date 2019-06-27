@@ -79,7 +79,6 @@ def trainTestSplit(df, size):
     Parameters:
     - df (df): Data that needs to be split into train and test
     - size (float): Size of the training set
-    - stations (list): all stations present in df
 
     Returns: x_train (df), y_train (df), x_eval (df), y_eval (df), train_dates (list)
     """

@@ -14,17 +14,15 @@ def generatePredictions(model, stations, lat_scaler, lon_scaler, full_df, xgb_mo
     This function generates crowdedness predictions for specified sensors and dates
 
     Parameters:
-    - sensors (list): all given sensors
     - model (model): desired model to generate predictions with
     - stations (list): all given stations
     - lat_scaler (model): trained scaler to transform given latitude
     - lon_scaler (model): trained scaler to transform given longitude
-    - station_scaler (model): trained scaler transform the stations weights and scores
     - full_df (df): full dataset
-    - xgb_model (boolean): check whether model == xgbr
-    - passenger_df (df): average passenger counts
+    - xgb_model (boolean): check whether model == xgb
     - output_dict (dict): all paths of output files
     - pred_dict (dict): hyperparameters prediction
+    - params_dict (dict): hyperparameters models
 
     Returns:
     - Df with all crowdedness predictions and input prediction data
@@ -37,6 +35,7 @@ def generatePredictions(model, stations, lat_scaler, lon_scaler, full_df, xgb_mo
     dates = pg.generateDates(pd.to_datetime(
         pred_dict["start_date"]), pd.to_datetime(pred_dict["end_date"]))
 
+    #Check if the data has to be generated from existing data
     if pred_dict["generate_df"]:
         #Construct dicts with longitude and latitude given sensors and stations
         sensor_dict = pg.defineCoordinates(pred_dict["add_sensor"], full_df)
@@ -45,6 +44,7 @@ def generatePredictions(model, stations, lat_scaler, lon_scaler, full_df, xgb_mo
         df = pg.combineData(dates, pred_dict["add_sensor"], sensor_dict,
                             stations, lat_scaler, lon_scaler, full_df)
     
+    #Check whether the models are trained for generalized prediction
     elif pred_dict["generalized_df"]:
         df = full_df[full_df["Sensor"] == params_dict["sensor_to_remove"]]
     

@@ -17,8 +17,6 @@ def transformData(events, lat_low, lat_high, lon_low, lon_high):
         - lon_high: max value longitude
         - lat_low: min value Latitude
         - lat_high: max value Latitude
-    - start_date: Start date of relevant events
-    - end_date: end date of relevant events
 
     Returns:DF with relevant event data
     """
@@ -89,8 +87,6 @@ def eventDF(json_events_path, lon_low, lon_high, lat_low, lat_high):
         - lon_high: max value longitude
         - lat_low: min value Latitude
         - lat_high: max value Latitude
-    - start_date: Start date of relevant events
-    - end_date: end date of relevant events
 
     Returns: Event DF
     """

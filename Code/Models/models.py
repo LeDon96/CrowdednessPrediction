@@ -31,6 +31,7 @@ def regressionModels(output_dict, params_dict, models_dict, kf, full_df):
     #Dict to save model results in
     metrics_dict = {}
 
+    #If remove sensor, split the data on sensors
     if params_dict["remove_sensor"]:
         x_train = full_df[full_df["Sensor"] != params_dict["sensor_to_remove"]].drop(
             columns=["CrowdednessCount"])
@@ -61,7 +62,7 @@ def regressionModels(output_dict, params_dict, models_dict, kf, full_df):
         metrics_dict[name] = reg.modelConstruction(
             output_dict["models"], output_dict["plots"], name, model, x_train, y_train, x_eval, y_eval, models_dict[name]["score"],
             train_dates, kf, models_dict[name]["cycles"], models_dict[name]["params"], models_dict["KFold"]["size"],
-            output_dict["predictions"], params_dict["remove_sensor"])
+            params_dict["remove_sensor"])
 
     #Save model results in dict
     df = pd.DataFrame.from_dict(metrics_dict, orient="index")
@@ -96,6 +97,7 @@ def classificationModels(output_dict, params_dict, models_dict, kf, full_df):
     #Convert the numerical crowdednessCounts to class labels
     class_df = classCrowdednessCounts(full_df)
 
+    #If remove sensor, split the data on sensors
     if params_dict["remove_sensor"]:
         x_train = class_df[class_df["Sensor"] != params_dict["sensor_to_remove"]].drop(
             columns=["CrowdednessCount"])
@@ -126,7 +128,7 @@ def classificationModels(output_dict, params_dict, models_dict, kf, full_df):
         metrics_dict[name] = clas.modelConstruction(
             output_dict["models"], output_dict["plots"], name, model, labels, x_train, y_train, x_eval, y_eval, models_dict[name]["score"],
             train_dates, kf, models_dict[name]["cycles"], models_dict[name]["params"], models_dict["KFold"]["size"],
-            output_dict["predictions"], params_dict["remove_sensor"])
+            params_dict["remove_sensor"])
 
     #Save model results in dict
     df = pd.DataFrame.from_dict(metrics_dict, orient="index")
@@ -145,6 +147,7 @@ def models(output_dict, params_dict, models_dict, pred_dict):
     - output_dict (dict): all paths of where output files should be saved
     - params_dict (dict): all general hyperparameters that can be changed by user
     - models_dict (dict): all parameters for the models
+    - pred_dict (dict): all parameters for the prediction
 
     Returns:
     - Saves constructed models
@@ -158,6 +161,7 @@ def models(output_dict, params_dict, models_dict, pred_dict):
     #Import Dataset
     full_df = pd.read_csv(output_dict["full_df"])
 
+    #Drop the unscaled station coordinates
     for station in params_dict["stations"]:
         full_df.drop(columns={station + " Lon", station + " Lat",
                          station + " passengers"}, inplace=True)

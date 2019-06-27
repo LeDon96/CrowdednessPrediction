@@ -63,7 +63,6 @@ def importData(sensor_df, gvb_df, event_df):
     gvb_df["Date"] = strToTimestamp(gvb_df["Date"], date_format)
     event_df["Date"] = strToTimestamp(event_df["Date"], date_format)
 
-
     return sensor_df, gvb_df, event_df
 
 def changeStartEndDate(sensor_df, gvb_df, event_df):
@@ -150,11 +149,13 @@ def constructFullDF(sensor_df, gvb_df, event_df, stations, lat_scaler_filename, 
     - gvb_df (df): gvb data
     - event_df (df): event data
     - stations (list): all relevant stations
-    - station_scaler_filename (str): where the scalar for station weights should be stored
+    - lat_scaler_filename (str): where the scalar for lat weights should be stored
+    - lon_scaler_filename (str): where the scalar for lon weights should be stored
 
     Returns: Full GVB that contains all relevant data
     """
 
+    #Scalers to scale the coordinates
     latscaler = StandardScaler()
     lonscaler = StandardScaler()
 
@@ -176,45 +177,59 @@ def constructFullDF(sensor_df, gvb_df, event_df, stations, lat_scaler_filename, 
     full_df = full_df.assign(Year=0, month_sin=0, month_cos=0,
                              day_sin=0, day_cos=0, hour_sin=0, hour_cos=0)
 
-    #Train scaler
+    #################################################################################
+
+    #List for values the scalars have to train on
     lats = []
     lons = []
 
+    #Append lon and lat values to list
     lats.append(full_df["SensorLatitude"].values)
     lons.append(full_df["SensorLongitude"].values)
 
+    #Loop over all relevant stations
     for station in stations:
+
+        #Add column to save the distance between the station and sensor
         full_df[station + " weight"] = 0
+
+        #Add column to save the number of passengers of the station
         full_df[station + " passengers"] = 0
+
+        #Add lon and lat values for the data to train on
         lats.append(full_df[station + " Lat"].values)
         lons.append(full_df[station + " Lon"].values)
 
+    #Fit the scalars to the data
     lats = np.asarray(lats).reshape(-1, 1)
     latscaler.fit(lats)
 
     lons = np.asarray(lons).reshape(-1, 1)
     lonscaler.fit(lons)
 
-    # pickle.dump(latscaler, open(lat_scaler_filename, 'wb'))
-    # pickle.dump(lonscaler, open(lon_scaler_filename, 'wb'))
+    #Save the scalars for later use
+    pickle.dump(latscaler, open(lat_scaler_filename, 'wb'))
+    pickle.dump(lonscaler, open(lon_scaler_filename, 'wb'))
 
+    #Scale the sensor coordinates
     full_df["Latscaled"] = latscaler.transform(
         full_df["SensorLatitude"].values.reshape(-1, 1))
     full_df["Lonscaled"] = lonscaler.transform(
         full_df["SensorLongitude"].values.reshape(-1, 1))
 
+    #Scale the station coordinates
     for station in stations:
         full_df[station + " LatScaled"] = latscaler.transform(
             full_df[station + " Lat"].values.reshape(-1, 1))
         full_df[station + " LonScaled"] = lonscaler.transform(
             full_df[station + " Lon"].values.reshape(-1, 1))
 
-    # #################################################################################
+    #################################################################################
 
     # #Construct dict with station weigths
     station_weights = calculateWeights(stations, full_df)
 
-    # #################################################################################
+    #################################################################################
 
     #Transform DF to Dict
     time_dict = full_df.to_dict("index")
@@ -263,7 +278,8 @@ def fullDF(sensor_df, gvb_df, event_df, stations, lat_scaler_filename, lon_scale
     - gvb_df (df): gvb data
     - event_df (df): event data
     - stations (list): all relevant stations
-    - coor_scaler_filename (str): where the scalar for coordinate weights should be stored
+    - lat_scaler_filename (str): where the scalar for lat weights should be stored
+    - lon_scaler_filename (str): where the scalar for lon weights should be stored
 
     Returns: Full DF with all relevant data
     """

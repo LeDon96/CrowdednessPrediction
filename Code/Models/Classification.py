@@ -77,6 +77,7 @@ def trainModel(model, x_train, y_train, kf, train_dates, labels, params, model_n
     mean_recall = 0
     mean_f1_score = 0
 
+    #Dict to save the metric scores
     prec_dict = {}
     rec_dict = {}
     f1_dict = {}
@@ -141,7 +142,7 @@ def trainModel(model, x_train, y_train, kf, train_dates, labels, params, model_n
 
     return mean_acc, prec_dict, rec_dict, f1_dict, model
 
-def evalModel(model, x_eval, y_eval, labels, plot_dir, model_name, x_train, y_train, pred_output):
+def evalModel(model, x_eval, y_eval, labels, plot_dir, model_name):
     """
     This function evaluates the trained model on unseen data
 
@@ -150,11 +151,8 @@ def evalModel(model, x_eval, y_eval, labels, plot_dir, model_name, x_train, y_tr
     - x_eval (df): test features model
     - y_eval (df): test target model
     - labels (list): class labels
-    - visualization (bool): whether you want a scatter model of evaluation results
     - plot_dir (str): directory where plots have to be saved
     - model_name (str): name of the model
-    - x_train (df): training feature set model
-    - y_train (df): training target set model
 
     Returns:
     - acc: Accuracy
@@ -196,7 +194,7 @@ def evalModel(model, x_eval, y_eval, labels, plot_dir, model_name, x_train, y_tr
 
 
 def modelConstruction(model_dir, plot_dir, model_name, model, labels, x_train, y_train, x_eval, y_eval, score, train_dates, kf, cycles, params, kf_size, 
-                      pred_output, remove_sensor):
+                      remove_sensor):
     """
     This function trains a linear regression model
 
@@ -242,7 +240,7 @@ def modelConstruction(model_dir, plot_dir, model_name, model, labels, x_train, y
 
     #Evaluate model on unseen data
     eval_acc, eval_prec, eval_rec, eval_f1 = evalModel(
-        model, x_eval, y_eval, labels, plot_dir, model_name, x_train, y_train, pred_output)
+        model, x_eval, y_eval, labels, plot_dir, model_name)
    
     #Save results evaluation
     results_dict["Evaluation Accuracy Score"] = eval_acc

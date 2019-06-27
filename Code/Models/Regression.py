@@ -114,7 +114,7 @@ def trainModel(x_train, y_train, train_dates, kf, model, params, model_name, kf_
     return mean_score, mean_rmse, model
 
 
-def evalModel(model, x_eval, y_eval, plot_dir, model_name, x_train, y_train, pred_output):
+def evalModel(model, x_eval, y_eval, plot_dir, model_name):
     """
     This function evaluates the trained model on unseen data
 
@@ -122,11 +122,8 @@ def evalModel(model, x_eval, y_eval, plot_dir, model_name, x_train, y_train, pre
     - model (model): model that needs to be evaluated
     - x_eval (df): test features model
     - y_eval (df): test target model
-    - visualization (bool): whether you want a scatter model of evaluation results
     - plot_dir (str): directory where plots have to be saved
     - model_name (str): name of the model
-    - x_train (df) (optional): training features model. Only needed for visualization
-    - y_train (df): training target model. Only needed for visualization
 
     Returns:
     - R2 score of the model
@@ -149,7 +146,7 @@ def evalModel(model, x_eval, y_eval, plot_dir, model_name, x_train, y_train, pre
     return eval_model_score, np.sqrt(eval_model_mse)
 
 def modelConstruction(model_dir, plot_dir, model_name, model, x_train, y_train, x_eval, y_eval, score, train_dates, kf, cycles, params, kf_size, 
-                      pred_output, remove_sensor):
+                      remove_sensor):
     """
     This function trains a linear regression model
 
@@ -192,7 +189,7 @@ def modelConstruction(model_dir, plot_dir, model_name, model, x_train, y_train, 
 
     #Evaluate the model
     eval_score, eval_mse = evalModel(
-        model, x_eval, y_eval, plot_dir, model_name, x_train, y_train, pred_output)
+        model, x_eval, y_eval, plot_dir, model_name)
     
     #Save results evaluation
     results_dict["Test R2 Score"] = eval_score

@@ -34,7 +34,7 @@
         {"strategy": ["most_frequent"]
         }},
 "rfc":
-    {"score": "precision_weighted",
+    {"score": "f1_weighted",
     "cycles": 10,
     "params": 
         {"n_estimators": list(range(300, 400, 25)),
@@ -45,7 +45,7 @@
         "class_weight": ["balanced", "balanced_subsample", None]
         }},
 "xgbc":
-    {"score": "precision_weighted",
+    {"score": "f1_weighted",
     "cycles": 15,
     "params": 
         {"learning_rate": [0.01],

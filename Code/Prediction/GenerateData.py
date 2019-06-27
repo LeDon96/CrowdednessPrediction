@@ -75,21 +75,21 @@ def SelectSensor(sensor,hour, weekday, stations, sensor_dict, lat_scaler, lon_sc
     in relation to eah of the given sensors
 
     Parameters:
+    - sensor (str): given sensor
     - hour (int): given hour of the day
     - weekday (int): given day of the week 
-    - sensor (str): given sensor
     - stations (list): list of all relevant stations
     - sensor_dict (dict): all latitude and longitude data of each given sensor
-    - station_dict (dict): weights and scores of each given station
     - lat_scaler (model): trained scaler to transform given latitude
     - lon_scaler (model): trained scaler to transform given longitude
-    - station_scaler (model): trained scaler transform the stations weights and scores
-    - passenger_df (df): average passenger counts
+    - full_df (df): full dataset
+    - date (str): date of the given prediction
 
     Returns:
     - lon_scaled (float): scaled sensor longitude
     - lat_scaled (float): scaled sensor latitude
-    - weights_dict (dict): station weights and scores, in relation to given sensor longitude and latitude
+    - weights_dict (dict): distances stations to sensor
+    - coor_dict (dict): scaled station coordinates
     """
 
     #Scale the sensor longitude and latitude
@@ -125,8 +125,8 @@ def SelectSensor(sensor,hour, weekday, stations, sensor_dict, lat_scaler, lon_sc
         weight = rbf_kernel(x, y)
 
         #Save the station weight and score in dict
-        weights_dict.update({station + " score": (weight[0][0] * passengers + weight[0][1] * passengers)/2,
-                            station + " weight": (weight[0][0] + weight[0][1])/2})
+        weights_dict.update({station + " passengers": passengers,
+                            station + " weight": weight[0][0]})
 
     return lon_scaled, lat_scaled, weights_dict, coor_dict
 
@@ -141,12 +141,10 @@ def constructSensorData(j, input_dict, date, sensor, sensor_dict, stations, lat_
     - date (Timestamp): given date
     - sensor (str): given sensor
     - sensor_dict (dict): all latitude and longitude data of each given sensor
-    - station_dict (dict): weights and scores of each given station
     - stations (list): list of all relevant stations
     - lat_scaler (model): trained scaler to transform given latitude
     - lon_scaler (model): trained scaler to transform given longitude
-    - station_scaler (model): trained scaler transform the stations weights and scores
-    - passenger_df (df): average passenger counts
+    - full_df (df): full dataset
 
     Returns:
     - j (int): updates iteration
@@ -186,15 +184,13 @@ def combineData(dates, sensor, sensor_dict, stations, lat_scaler, lon_scaler, fu
     This function constructs dict with all needed data to generate needed predictions
 
     Parameters:
-    - date (Timestamp): given dates
+    - dates (Timestamp): given dates
     - sensor (str): given sensors
     - sensor_dict (dict): all latitude and longitude data of each given sensor
-    - station_dict (dict): weights and scores of each given station
     - stations (list): list of all relevant stations
     - lat_scaler (model): trained scaler to transform given latitude
     - lon_scaler (model): trained scaler to transform given longitude
-    - station_scaler (model): trained scaler transform the stations weights and scores
-    - passenger_df (df): average passenger counts
+    - full_df (df): full dataset
 
     Returns:
     - df with all needed data to generate prediction
@@ -243,17 +239,11 @@ def defineCoordinates(add_sensor, full_df):
     This function saves all needed coordinates for predicion
 
     Parameters:
-    - sensors (list): all given sensors
-    - stations (list): all given stations
     - add_sensors (boolean): whether to add sensors to prediction
-    - extra_cor (boolean): whether to add custom sensor to prediction
-        - extra_lon (float): Longitude custom sensor
-        - extra_lat (float): Latitude custom sensor
     - full_df: full dateset
 
     Returns:
     - sensor_dict (dict): Longitude and Latitude each given sensor
-    - station_dict (dict): Longitude and Latitude each given station
     """
 
     sensor_dict = {"Longitude": full_df[full_df["Sensor"] == add_sensor].reset_index()["SensorLongitude"][0],

@@ -12,8 +12,7 @@ def importModels(model, output_dict):
     - model: Imported model
     - lat_scaler: Imported latitude scaler
     - lon_scaler: Imported longitude scaler
-    - station_scaler: Imported station scaler
-    - xgbr_model (boolean): check whether model == xgbr
+    - xgb_model (boolean): check whether model == xgbr
     """
 
     #Check whether xgbr model will be used

@@ -1,8 +1,5 @@
 #Imports 
 import pandas as pd
-from sklearn.preprocessing import StandardScaler
-import pickle
-
 
 def sensorCoordinates(coor_df, needed_sensors):
     """
@@ -58,11 +55,6 @@ def sensorData(blip_df, locations_dict, needed_sensors, sensor_df, gaww_02, gaww
 
     Returns: DF with all relevant sensor data
     """
-
-    #Variables
-
-    #Scaler to scale the latitude and longitude of sensors
-    scaler = StandardScaler()
 
     #################################################################################
 
@@ -138,7 +130,7 @@ def sensorData(blip_df, locations_dict, needed_sensors, sensor_df, gaww_02, gaww
     return full_df
 
 
-def sensorDF(path_to_coordinateData, path_to_blipData, needed_sensors, path_to_sensorData, gaww_02, gaww_03):
+def sensorDF(path_to_sensorData, path_to_coordinateData, path_to_blipData, needed_sensors, gaww_02, gaww_03):
 
     """
     Call on functions to construct full sensor df
@@ -150,8 +142,6 @@ def sensorDF(path_to_coordinateData, path_to_blipData, needed_sensors, path_to_s
     - needed_sensors (list): selection of given relevant sensors
     - gaww-02 (list): alternate names for the gaww-02 sensor
     - gaww-03 (list): alternate names for the gaww-03 sensor
-    - lon_scaler_filename: where the longitude scaler should be saved
-    - lat_scaler_filename: where the latitude scaler should be saved
 
     Returns: DF with all relevant Sensor data
     """
