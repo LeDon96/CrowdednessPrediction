@@ -2,7 +2,7 @@
 import pandas as pd
 import numpy as np
 import pickle
-from sklearn.metrics.pairwise import rbf_kernel
+from sklearn.metrics.pairwise import rbf_kernel 
 from sklearn.preprocessing import StandardScaler
 
 def strToTimestamp(df, format):
@@ -63,7 +63,6 @@ def importData(sensor_df, gvb_df, event_df):
     gvb_df["Date"] = strToTimestamp(gvb_df["Date"], date_format)
     event_df["Date"] = strToTimestamp(event_df["Date"], date_format)
 
-
     return sensor_df, gvb_df, event_df
 
 def changeStartEndDate(sensor_df, gvb_df, event_df):
@@ -97,14 +96,14 @@ def changeStartEndDate(sensor_df, gvb_df, event_df):
 
     return sensor_df, gvb_df, event_df
 
-def calculateWeights(stations, df, station_scaler_filename):
+
+def calculateWeights(stations, df):
     """
     This function returns a dict with scaled rbk kernels, representing the distance between each station and sensor. 
 
     Parameters:
     - stations (list): all relevant stations
     - df (df): where the latitudes and longitudes of each station and sensor are stored
-    - station_scaler_filename (str): where the scalar for station weights should be stored
 
     Returns: Dict with all scaled weights per sensor, per station
     """
@@ -114,14 +113,7 @@ def calculateWeights(stations, df, station_scaler_filename):
     #List all sensors present in full dataset
     sensors = df["Sensor"].unique()
 
-    #List where the rbf kernels of all stations, in relation to the sensor, will be saved
-    weights = []
-
-    #Scaler for station kernel data
-    scaler = StandardScaler()
-
-    #Dict for rbf weight positions in the weights list
-    weights_dict = {}
+    weights = {}
 
     #################################################################################
 
@@ -129,49 +121,26 @@ def calculateWeights(stations, df, station_scaler_filename):
     for sensor in sensors:
 
         #Make an array with the latitude and longitude of the sensor
-        y = np.array([df[df["Sensor"] == sensor].reset_index()["SensorLatitude"][0],
-                      df[df["Sensor"] == sensor].reset_index()["SensorLongitude"][0]]).reshape(1, -1)
+        x = np.array(df[df["Sensor"] == sensor].reset_index()["SensorLatitude"][0],
+                     df[df["Sensor"] == sensor].reset_index()["SensorLongitude"][0]).reshape(1, -1)
 
-        #Dict where the rbf kernels of all stations, in relation to the sensor, will be saved
-        stations_dict = {}
-
+        station_weights = {}
         #Loop over all stations
         for station in stations:
 
             #Make an array with the latitude and longitude of the station
-            x = np.array([df[station + " Lat"][0],
-                          df[station + " Lon"][0]]).reshape(1, -1)
+            y = np.array(df[station + " Lat"][0],
+                          df[station + " Lon"][0]).reshape(1, -1)
 
-            #Save the resulting weight of the RBF kernel between the y(sensor) and x(station) coordinates
-            weights.append(rbf_kernel(x, y)[0, 0])
+            #Add station weight
+            station_weights[station + " weight"] = rbf_kernel(x, y)
 
-            #Save the position of the weight in the list
-            stations_dict[station] = len(weights) - 1
+        weights[sensor] = station_weights
 
-        #Save all te rbf kernel weights positions of the list
-        weights_dict[sensor] = stations_dict
-
-    #################################################################################
-
-    #Convert list to np array and reshape the array
-    weights = np.asarray(weights)
-    weights = weights.reshape(-1, 1)
-
-    #Scale the weights and save the scaler for later use
-    weights = scaler.fit_transform(weights)
-    pickle.dump(scaler, open(station_scaler_filename, 'wb'))
-
-    #################################################################################
-
-    #Loop over weights dict and replace the rbf weights positions with the actual weights
-    for k, v in weights_dict.items():
-        for station in stations:
-            v[station] = weights[v[station]]
-
-    return weights_dict
+    return weights
 
 
-def constructFullDF(sensor_df, gvb_df, event_df, stations, station_scaler_filename):
+def constructFullDF(sensor_df, gvb_df, event_df, stations, lat_scaler_filename, lon_scaler_filename):
     """
     This function combines all the previously constructed DF's and merges them into one. In addition, time is transformed into a cyclic continuous feature.
 
@@ -180,14 +149,19 @@ def constructFullDF(sensor_df, gvb_df, event_df, stations, station_scaler_filena
     - gvb_df (df): gvb data
     - event_df (df): event data
     - stations (list): all relevant stations
-    - station_scaler_filename (str): where the scalar for station weights should be stored
+    - lat_scaler_filename (str): where the scalar for lat weights should be stored
+    - lon_scaler_filename (str): where the scalar for lon weights should be stored
 
     Returns: Full GVB that contains all relevant data
     """
 
+    #Scalers to scale the coordinates
+    latscaler = StandardScaler()
+    lonscaler = StandardScaler()
+
     #Combine DF's
     gvb_sensor_df = pd.merge(gvb_df, sensor_df, on=[
-                            "Date", "Hour", "weekday"], how="outer")
+        "Date", "Hour", "weekday"], how="outer")
     full_df = pd.merge(gvb_sensor_df, event_df, on=["Date"], how="outer")
 
     #################################################################################
@@ -203,14 +177,57 @@ def constructFullDF(sensor_df, gvb_df, event_df, stations, station_scaler_filena
     full_df = full_df.assign(Year=0, month_sin=0, month_cos=0,
                              day_sin=0, day_cos=0, hour_sin=0, hour_cos=0)
 
+    #################################################################################
+
+    #List for values the scalars have to train on
+    lats = []
+    lons = []
+
+    #Append lon and lat values to list
+    lats.append(full_df["SensorLatitude"].values)
+    lons.append(full_df["SensorLongitude"].values)
+
+    #Loop over all relevant stations
     for station in stations:
-        full_df[station + " score"] = 0
+
+        #Add column to save the distance between the station and sensor
         full_df[station + " weight"] = 0
+
+        #Add column to save the number of passengers of the station
+        full_df[station + " passengers"] = 0
+
+        #Add lon and lat values for the data to train on
+        lats.append(full_df[station + " Lat"].values)
+        lons.append(full_df[station + " Lon"].values)
+
+    #Fit the scalars to the data
+    lats = np.asarray(lats).reshape(-1, 1)
+    latscaler.fit(lats)
+
+    lons = np.asarray(lons).reshape(-1, 1)
+    lonscaler.fit(lons)
+
+    #Save the scalars for later use
+    pickle.dump(latscaler, open(lat_scaler_filename, 'wb'))
+    pickle.dump(lonscaler, open(lon_scaler_filename, 'wb'))
+
+    #Scale the sensor coordinates
+    full_df["Latscaled"] = latscaler.transform(
+        full_df["SensorLatitude"].values.reshape(-1, 1))
+    full_df["Lonscaled"] = lonscaler.transform(
+        full_df["SensorLongitude"].values.reshape(-1, 1))
+
+    #Scale the station coordinates
+    for station in stations:
+        full_df[station + " LatScaled"] = latscaler.transform(
+            full_df[station + " Lat"].values.reshape(-1, 1))
+        full_df[station + " LonScaled"] = lonscaler.transform(
+            full_df[station + " Lon"].values.reshape(-1, 1))
 
     #################################################################################
 
-    #Construct dict with station weigths
-    station_weights = calculateWeights(stations, full_df, station_scaler_filename)
+    # #Construct dict with station weigths
+    station_weights = calculateWeights(stations, full_df)
 
     #################################################################################
 
@@ -232,22 +249,19 @@ def constructFullDF(sensor_df, gvb_df, event_df, stations, station_scaler_filena
 
         #Loop over all stations
         for station in stations:
+            #Add station weight
+            v[station + " weight"] = station_weights[v["Sensor"]][station + " weight"][0][0]
 
-            #Add a station score, which is the weight multiplied with total passengers
-            v[station + " score"] = float(station_weights[v["Sensor"]][station] * (
-                v[station + " Arrivals"] + v[station + " Departures"]))
-
-            #Add station weight 
-            v[station +
-                " weight"] = float(station_weights[v["Sensor"]][station])
+            v[station + " passengers"] = v[station +
+                                           " Arrivals"] + v[station + " Departures"]
 
     #Transform dict back to DF
     full_df = pd.DataFrame.from_dict(
         time_dict, orient="index").reset_index().drop(columns="index")
 
-    #################################################################################
+    # #################################################################################
 
-    #Drop nonrelevant columns
+    # #Drop nonrelevant columns
     for station in stations:
         full_df.drop(columns={station + " Arrivals",
                               station + " Departures"}, inplace=True)
@@ -255,7 +269,7 @@ def constructFullDF(sensor_df, gvb_df, event_df, stations, station_scaler_filena
     return full_df
 
 
-def fullDF(sensor_df, gvb_df, event_df, stations, station_scaler_filename):
+def fullDF(sensor_df, gvb_df, event_df, stations, lat_scaler_filename, lon_scaler_filename):
     """
     This functions constructs the full DF by combining previously constructed DF's
 
@@ -264,7 +278,8 @@ def fullDF(sensor_df, gvb_df, event_df, stations, station_scaler_filename):
     - gvb_df (df): gvb data
     - event_df (df): event data
     - stations (list): all relevant stations
-    - station_scaler_filename (str): where the scalar for station weights should be stored
+    - lat_scaler_filename (str): where the scalar for lat weights should be stored
+    - lon_scaler_filename (str): where the scalar for lon weights should be stored
 
     Returns: Full DF with all relevant data
     """
@@ -278,6 +293,6 @@ def fullDF(sensor_df, gvb_df, event_df, stations, station_scaler_filename):
 
     #Form full DF
     full_df = constructFullDF(
-        sensor_df, gvb_df, event_df, stations, station_scaler_filename)
+        sensor_df, gvb_df, event_df, stations, lat_scaler_filename, lon_scaler_filename)
 
     return full_df

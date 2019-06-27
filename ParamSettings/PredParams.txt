@@ -1,8 +1,9 @@
-{"model": "rfg",
-"start_date": "2019-01-01",
-"end_date": "2019-03-26",
-"add_sensors": True,
-"extra_coordinate": False,
-"extra_lon": 4.898,
-"extra_lat": 52.373,
-"make_plot": True}
+{"model": "xgbr",
+"start_date": "2019-03-23",
+"end_date": "2019-03-25",
+"add_sensor": "GAWW-01",
+"make_plot": False,
+"generate_df": False,
+"generalized_df": False,
+"fig_x": 10,
+"fig_y": 6}

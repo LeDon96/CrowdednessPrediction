@@ -12,12 +12,11 @@ def importModels(model, output_dict):
     - model: Imported model
     - lat_scaler: Imported latitude scaler
     - lon_scaler: Imported longitude scaler
-    - station_scaler: Imported station scaler
-    - xgbr_model (boolean): check whether model == xgbr
+    - xgb_model (boolean): check whether model == xgbr
     """
 
     #Check whether xgbr model will be used
-    xgbr_model = False
+    xgb_model = False
 
     #Import needed model
     if model == "rfg":
@@ -26,13 +25,20 @@ def importModels(model, output_dict):
     elif model == "xgbr":
         model = pickle.load(
             open(output_dict["xgbr_model"], 'rb'))
-        xgbr_model = True
+        xgb_model = True
     elif model == "rfc":
         model = pickle.load(
             open(output_dict["rfc_model"], 'rb'))
     elif model == "xgbc":
         model = pickle.load(
             open(output_dict["xgbc_model"], 'rb'))
+        xgb_model = True
+    elif model == "lr":
+        model = pickle.load(
+            open(output_dict["lr_model"], 'rb'))
+    elif model == "dc":
+        model = pickle.load(
+            open(output_dict["dc_model"], 'rb'))
 
     #Import scaler for sensor Latitudes
     lat_scaler = pickle.load(
@@ -42,8 +48,4 @@ def importModels(model, output_dict):
     lon_scaler = pickle.load(
         open(output_dict["lon_scaler"], 'rb'))
 
-    #Import scaler for station data
-    station_scaler = pickle.load(
-        open(output_dict["station_scaler"], 'rb'))
-
-    return model, lat_scaler, lon_scaler, station_scaler, xgbr_model
+    return model, lat_scaler, lon_scaler, xgb_model

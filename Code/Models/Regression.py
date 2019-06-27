@@ -114,7 +114,7 @@ def trainModel(x_train, y_train, train_dates, kf, model, params, model_name, kf_
     return mean_score, mean_rmse, model
 
 
-def evalModel(model, x_eval, y_eval, visualization, plot_dir, model_name, x_train, y_train):
+def evalModel(model, x_eval, y_eval, plot_dir, model_name):
     """
     This function evaluates the trained model on unseen data
 
@@ -122,11 +122,8 @@ def evalModel(model, x_eval, y_eval, visualization, plot_dir, model_name, x_trai
     - model (model): model that needs to be evaluated
     - x_eval (df): test features model
     - y_eval (df): test target model
-    - visualization (bool): whether you want a scatter model of evaluation results
     - plot_dir (str): directory where plots have to be saved
     - model_name (str): name of the model
-    - x_train (df) (optional): training features model. Only needed for visualization
-    - y_train (df): training target model. Only needed for visualization
 
     Returns:
     - R2 score of the model
@@ -145,26 +142,11 @@ def evalModel(model, x_eval, y_eval, visualization, plot_dir, model_name, x_trai
 
         y_pred_eval_model = model.predict(x_eval)
         eval_model_mse = mean_squared_error(y_pred_eval_model, y_eval)
-
-    #Visualize the model results
-    if visualization == True:
-        visualizer = PredictionError(model)
-        # Fit the training data to the visualizer
-
-        ## XGB Regressor model only takes values as input
-        if model_name == "xgbr":
-            visualizer.fit(x_train.drop(
-                columns={"Date"}).values, y_train["CrowdednessCount"].values)
-            visualizer.score(x_eval.values, y_eval.values)  # Evaluate the model on the test data
-        else: 
-            visualizer.fit(x_train.drop(columns={"Date"}), y_train["CrowdednessCount"])
-            visualizer.score(x_eval, y_eval)  # Evaluate the model on the test data
-        visualizer.poof("{0}{1}.png".format(plot_dir, model_name))
-        plt.gcf().clear()
         
     return eval_model_score, np.sqrt(eval_model_mse)
 
-def modelConstruction(model_dir, plot_dir, model_name, model, x_train, y_train, x_eval, y_eval, score, train_dates, kf, cycles, visualization, params, kf_size):
+def modelConstruction(model_dir, plot_dir, model_name, model, x_train, y_train, x_eval, y_eval, score, train_dates, kf, cycles, params, kf_size, 
+                      remove_sensor):
     """
     This function trains a linear regression model
 
@@ -207,14 +189,19 @@ def modelConstruction(model_dir, plot_dir, model_name, model, x_train, y_train, 
 
     #Evaluate the model
     eval_score, eval_mse = evalModel(
-        model, x_eval, y_eval, visualization, plot_dir, model_name, x_train, y_train)
+        model, x_eval, y_eval, plot_dir, model_name)
     
     #Save results evaluation
     results_dict["Test R2 Score"] = eval_score
     results_dict["Test RMSE Score"] = eval_mse
 
     #Save the model
-    filename = "{0}{1}_model.sav".format(model_dir, model_name)
+    #Save model as pickle
+    if remove_sensor:
+        filename = "{0}{1}_model_generalize.sav".format(model_dir, model_name)
+    else:
+        filename = "{0}{1}_model.sav".format(model_dir, model_name)
+    
     pickle.dump(model, open(filename, 'wb'))
 
     return results_dict

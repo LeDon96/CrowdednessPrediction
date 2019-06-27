@@ -27,12 +27,12 @@ def hyperParameter(x_train, y_train, score, model, model_name, cycles, params):
     """
 
     #Call on the the hyper parameter fitting modle
-    hyp = RandomizedSearchCV(estimator=model, param_distributions=params, n_iter=cycles, scoring=score, n_jobs=4, cv=10,
+    hyp = RandomizedSearchCV(estimator=model, param_distributions=params, n_iter=cycles, scoring=score, n_jobs=-1, cv=10,
                              refit=score, random_state=42)
 
     #Run hyper parameter fitting
     ## XGB Classifier model only takes values as input
-    if model_name == "xgbr":
+    if model_name == "xgbc":
         model = hyp.fit(x_train.drop(
             columns={"Date"}).values, y_train["CrowdednessCount"].values)
     else:
@@ -69,7 +69,7 @@ def trainModel(model, x_train, y_train, kf, train_dates, labels, params, model_n
     else:
         model.set_params(**params)
         params["random_state"] = 42
-        params["n_jobs"] = 4
+        params["n_jobs"] = -1
 
     #Variables
     mean_acc = 0
@@ -77,6 +77,7 @@ def trainModel(model, x_train, y_train, kf, train_dates, labels, params, model_n
     mean_recall = 0
     mean_f1_score = 0
 
+    #Dict to save the metric scores
     prec_dict = {}
     rec_dict = {}
     f1_dict = {}
@@ -86,9 +87,9 @@ def trainModel(model, x_train, y_train, kf, train_dates, labels, params, model_n
 
         #Select rows dataset based on the dates in train_index
         ## XGB Classifier model only takes values as input
-        if model_name == "xgbr":
+        if model_name == "xgbc":
             x = x_train[x_train["Date"].isin(
-                train_dates[train_index])].drop(columns={"Date"}.values)
+                train_dates[train_index])].drop(columns={"Date"}).values
             y = y_train[y_train["Date"].isin(
                 train_dates[train_index])]["CrowdednessCount"].values 
         else: 
@@ -102,7 +103,7 @@ def trainModel(model, x_train, y_train, kf, train_dates, labels, params, model_n
 
         #Select rows dataset based on dates in test_index 
         ## XGB Classifier model only takes values as input
-        if model_name == "xgbr":
+        if model_name == "xgbc":
             x_test = x_train[x_train["Date"].isin(
                 train_dates[test_index])].drop(columns={"Date"}).values
             y_test = y_train[y_train["Date"].isin(
@@ -141,7 +142,7 @@ def trainModel(model, x_train, y_train, kf, train_dates, labels, params, model_n
 
     return mean_acc, prec_dict, rec_dict, f1_dict, model
 
-def evalModel(model, x_eval, y_eval, labels, visualization, plot_dir, model_name, x_train, y_train):
+def evalModel(model, x_eval, y_eval, labels, plot_dir, model_name):
     """
     This function evaluates the trained model on unseen data
 
@@ -150,11 +151,8 @@ def evalModel(model, x_eval, y_eval, labels, visualization, plot_dir, model_name
     - x_eval (df): test features model
     - y_eval (df): test target model
     - labels (list): class labels
-    - visualization (bool): whether you want a scatter model of evaluation results
     - plot_dir (str): directory where plots have to be saved
     - model_name (str): name of the model
-    - x_train (df): training feature set model
-    - y_train (df): training target set model
 
     Returns:
     - acc: Accuracy
@@ -169,7 +167,7 @@ def evalModel(model, x_eval, y_eval, labels, visualization, plot_dir, model_name
     f1_dict = {}
 
     # XGB Classifier model only takes values as input
-    if model_name == "xgbr":
+    if model_name == "xgbc":
         x_eval = x_eval.values
         y_eval = y_eval.values
 
@@ -192,20 +190,11 @@ def evalModel(model, x_eval, y_eval, labels, visualization, plot_dir, model_name
             rec_dict["{0}".format(labels[i])] = rec[i]
             f1_dict["{0}".format(labels[i])] = f1[i]
 
-    #Visualize the model results
-    if visualization == True:
-        visualizer = ClassPredictionError(
-                model
-            )
-        visualizer.fit(x_train.drop(columns={"Date"}), y_train["CrowdednessCount"])
-        visualizer.score(x_eval, y_eval)
-        visualizer.poof("{0}{1}.png".format(plot_dir, model_name))
-        plt.gcf().clear()
-
     return acc, prec_dict, rec_dict, f1_dict
 
 
-def modelConstruction(model_dir, plot_dir, model_name, model, labels, x_train, y_train, x_eval, y_eval, score, train_dates, kf, cycles, visualization, params, kf_size):
+def modelConstruction(model_dir, plot_dir, model_name, model, labels, x_train, y_train, x_eval, y_eval, score, train_dates, kf, cycles, params, kf_size, 
+                      remove_sensor):
     """
     This function trains a linear regression model
 
@@ -251,7 +240,7 @@ def modelConstruction(model_dir, plot_dir, model_name, model, labels, x_train, y
 
     #Evaluate model on unseen data
     eval_acc, eval_prec, eval_rec, eval_f1 = evalModel(
-        model, x_eval, y_eval, labels, visualization, plot_dir, model_name, x_train, y_train)
+        model, x_eval, y_eval, labels, plot_dir, model_name)
    
     #Save results evaluation
     results_dict["Evaluation Accuracy Score"] = eval_acc
@@ -260,7 +249,11 @@ def modelConstruction(model_dir, plot_dir, model_name, model, labels, x_train, y
     results_dict["Evaluation F1 Score"] = eval_f1
 
     #Save model as pickle
-    filename = "{0}{1}_model.sav".format(model_dir, model_name)
+    if remove_sensor:
+        filename = "{0}{1}_model_generalize.sav".format(model_dir, model_name)
+    else:
+        filename = "{0}{1}_model.sav".format(model_dir, model_name)
+    
     pickle.dump(model, open(filename, 'wb'))
 
     return results_dict
