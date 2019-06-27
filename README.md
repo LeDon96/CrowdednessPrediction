@@ -10,12 +10,14 @@ The predictions can be generated in two different forms:
 
 ## Usage
 - Clone or donwload the code
-- Set the [Hyperparameter Settings](Hyperparameters.md)
+- Set the [Hyperparameter Settings](ParamSettings/)
 - Run [main.py](main.py)
 - Enhoy the given prediciton :)
 
 ## Documents
 - [Thesis Design](Documents/Thesis_Proposal_Crowdedness.pdf)
+- [Code Requirements](Documents/Requirements.md)
+- [Hyperparameter Settings Explanation](Documents/Hyperparameters.md)
 
 ## Code
 All the code can be run from the [main.py](main.py) file. This files calls on all the needed functions to do the following:

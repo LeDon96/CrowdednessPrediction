@@ -1,7 +1,5 @@
-# Requirements
-
-## Librariers
-Below are the needed libraries listed to run the Jupyter Notebooks
+# Code Requirements
+Below are the libraries listed, that are needed to run the code
 
 - **JSON**
 - **Pandas**
@@ -13,13 +11,9 @@ Below are the needed libraries listed to run the Jupyter Notebooks
     - *Installation*: pip install -U scikit-learn
     - [Documentation](https://scikit-learn.org/stable/documentation.html)
 - **re**
-- **Scipy**
-- **yellowbrick**
-    - *Installation*: pip install yellowbrick
-    - [Documentation](https://www.scikit-yb.org/en/latest/)
 - **matplotlib**
     - *Installation*: pip install matplotlib
 - **xlrd**
     - *Installation*: pip install xlrd
-- **NBImporter**
-    - *Installation*: pip install nbimporter
+- **Jupyter Notebook**
+    - Only needed to open the *Data Exploration* Notebooks
