@@ -15,7 +15,7 @@ The predictions can be generated in two different forms:
 - Enhoy the given prediciton :)
 
 ## Documents
-- [Thesis Design](Documents/Thesis_Design_Crowdedness.pdf)
+- [Thesis Design](Documents/Thesis_Proposal_Crowdedness.pdf)
 
 ## Code
 All the code can be run from the [main.py](main.py) file. This files calls on all the needed functions to do the following:
