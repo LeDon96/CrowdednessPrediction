@@ -1,4 +1,4 @@
-# CrowdednessPrediction
+# Prediction Models to estimate crowdedness within Amsterdam
 
 ## Abstract
 Amsterdam is a crowded city, which increases the pressure on public services, public events and public spaces. Sensors were placed in the city to measure the crowdedness of pedestrians within small predetermined areas. This research aims to train prediction models that predict the crowdedness at and between predetermined locations within Amsterdam, at an hourly rate for each single day within a predetermined period. 
