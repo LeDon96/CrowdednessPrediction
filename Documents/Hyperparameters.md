@@ -7,7 +7,7 @@ In this file code spanning hyperparameter settings can be set.
 - *gaww-02*/*gaww-03* (list): These include different names for the given sensors. This setting is specific to this project, due to data constraints and may be removed.
 - *stations* (list): Which stations to include as features for the predictions, given their data is present.
 - *make_fullDF* (boolean): If **True**, the full dataset needed to train the models is constructed. If **False**, it is assumed this dataset is already present.
-- *make_models* (boolean): if **True**, the predetermined models needed for prediction are constructed (see *reg_models* and *clas_models*). If **False**, it is assumed the models are laready constructed and present.
+- *make_models* (boolean): if **True**, the predetermined models needed for prediction are constructed (see *reg_models* and *clas_models*). If **False**, it is assumed the models are already constructed and present.
 - *gen_borders* (boolean): If **True**, the most outside Longitude and Latitude of the sensors present in the *Full Dataset* are saved. If **False**, the given parameters are used. 
 - *remove_sensor* (boolean): If **True**, the models will be trained to make generalized predictions of unknown locations. If **False**, the models will be trained to predict unknown dates. 
 - *sensor_to_remove* (str): If *remove_sensor* is **True**, this sensor will be removed during training and evaluated upon. 
