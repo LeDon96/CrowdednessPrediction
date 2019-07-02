@@ -1,6 +1,5 @@
 #Imports
 import pandas as pd
-import datetime
 import json
 
 def transformData(events, lat_low, lat_high, lon_low, lon_high):

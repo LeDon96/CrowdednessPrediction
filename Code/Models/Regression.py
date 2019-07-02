@@ -1,7 +1,6 @@
 from sklearn.model_selection import RandomizedSearchCV
 import numpy as np
 from sklearn.metrics import mean_squared_error
-from yellowbrick.regressor import PredictionError
 import pickle
 import matplotlib.pyplot as plt
 import pandas as pd
