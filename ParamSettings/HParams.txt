@@ -24,7 +24,7 @@
     'Spui', 
     'Centraal Station'
 ], 
-'make_fullDF': False, 
+'make_fullDF': True, 
 'make_models': True,
 'gen_borders': False,
 'remove_sensor': False, 
@@ -35,6 +35,7 @@
     'xgbr'
 ], 
 'clas_models': [ 
+    'dc',
     'rfc',
     'xgbc'
 ], 

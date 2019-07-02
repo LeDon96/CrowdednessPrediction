@@ -28,7 +28,9 @@ The predictions can be generated in two different forms:
 - Clone or donwload the code
 - Set the [Hyperparameter Settings](ParamSettings/)
 - Run [main.py](main.py)
-- Enhoy the given prediciton :)
+    - The dataset only needs to be constructed if not present
+    - The models only need to be constructed if not present 
+- Enjoy the given prediciton :)
 
 ## Code
 All the code can be run from the [main.py](main.py) file. This files calls on all the needed functions to do the following:

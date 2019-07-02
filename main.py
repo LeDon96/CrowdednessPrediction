@@ -3,6 +3,7 @@ import numpy as np
 import json 
 import re 
 import os
+from tqdm import tqdm
 
 #Import own functions
 from Code.ImportData.constructFullDataset import constructDF
@@ -49,33 +50,55 @@ def main():
     This is the main function, that calls on all needed function to generate a crowdedness prediction
     """
 
-    #Import all needed hyperparameter data
-    input_dict, output_dict, params_dict, models_dict, pred_dict = setUp()
+    #Instantiate Progress bar
+    with tqdm(total=4, desc="Setting up") as pbar:
 
-    #If dataset needs to be constructed
-    if params_dict["make_fullDF"]:
+        #Import all needed hyperparameter data
+        input_dict, output_dict, params_dict, models_dict, pred_dict = setUp()
 
-        #Construct full dataset
-        constructDF(input_dict, output_dict, params_dict)
+        #Update progress bar
+        pbar.update(1)
+        pbar.set_description(desc="Importing full dataset")
 
-        if params_dict["gen_borders"]:
-            #Import full dataset and set latitude and longitude borders for the custom sensor
-            full_df = pd.read_csv(output_dict["full_df"])
-            params_dict["lon_max"], params_dict["lon_min"], params_dict["lat_max"], params_dict["lat_min"] = minMaxCoordinates(
-                full_df)
+        #If dataset needs to be constructed
+        if params_dict["make_fullDF"]:
 
-            #Save the sensor borders in general parameters
-            with open("ParamSettings/HParams.txt", "w") as f:
-                f.write(str(params_dict))
+            #Construct full dataset
+            constructDF(input_dict, output_dict, params_dict)
 
-    #If models need to be constructed
-    if params_dict["make_models"]:
+            if params_dict["gen_borders"]:
+                #Import full dataset and set latitude and longitude borders for the custom sensor
+                full_df = pd.read_csv(output_dict["full_df"])
+                params_dict["lon_max"], params_dict["lon_min"], params_dict["lat_max"], params_dict["lat_min"] = minMaxCoordinates(
+                    full_df)
 
-        #Construct models
-        models(output_dict, params_dict, models_dict, pred_dict)
+                #Save the sensor borders in general parameters
+                with open("ParamSettings/HParams.txt", "w") as f:
+                    f.write(str(params_dict))
+        
+        #Update progess bar
+        pbar.update(1)
+        pbar.set_description(desc="Constructing models")
 
-    #Generate Predictions
-    # prediction(output_dict, params_dict, pred_dict)
+        #If models need to be constructed
+        if params_dict["make_models"]:
+
+            #Construct models
+            models(output_dict, params_dict, models_dict, pred_dict)
+
+        #Update progress bar
+        pbar.update(1)
+        pbar.set_description(desc="Generating prediction")
+
+        #Generate Predictions
+        prediction(output_dict, params_dict, pred_dict)
+
+        #Update progress bar
+        pbar.update(1)
+        pbar.set_description(desc="Finished")
+    
+    #Close progres bar
+    pbar.close()
 
 if __name__ == '__main__':
     main()

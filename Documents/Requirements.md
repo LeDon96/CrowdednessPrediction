@@ -1,19 +1,32 @@
 # Code Requirements
 Below are the libraries listed, that are needed to run the code
 
-- **JSON**
 - **Pandas**
+    - Used for most data import, exploration, and transformation functions
     - *Installation*: pip install pandas
     - [Documentation](https://pandas.pydata.org/pandas-docs/stable/)
-- **DateTime**
-    - [Documentation](https://docs.python.org/3/library/datetime.html)
 - **Sklearn**
+    - Used to import and train models
     - *Installation*: pip install -U scikit-learn
     - [Documentation](https://scikit-learn.org/stable/documentation.html)
-- **re**
 - **matplotlib**
+    - Used for data visualization
     - *Installation*: pip install matplotlib
+    - [Documentation](https://matplotlib.org/)
+- **JSON**
+    - Used for importing JSON files
+    - [Documentation](https://www.w3schools.com/python/python_json.asp)
+- **re**
+    - Used for construction expressions
+    - [Documentation](https://docs.python.org/3/library/re.html)
 - **xlrd**
+    - Used for importing xlrd files
     - *Installation*: pip install xlrd
+    - [Documentation](https://pypi.org/project/xlrd/)
 - **Jupyter Notebook**
     - Only needed to open the *Data Exploration* Notebooks
+    - [Documentation](https://jupyter.org/)
+- **tqdm**
+    - Used to display progress functions
+    - *Installation*: pip install tqdm
+    - [Documentation](https://github.com/tqdm/tqdm)

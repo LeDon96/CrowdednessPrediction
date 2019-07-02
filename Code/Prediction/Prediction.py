@@ -51,7 +51,7 @@ def generatePredictions(model, stations, lat_scaler, lon_scaler, full_df, xgb_mo
     else:
         full_df["Date"] = pd.to_datetime(full_df["Date"], format="%Y-%m-%d")
         df = full_df[(full_df["Date"].isin(dates)) & (
-            full_df["Sensor"] == pred_dict["add_sensor"])]
+            full_df["Sensor"] == pred_dict["add_sensor"])].copy()
         df.drop(columns=["CrowdednessCount", "Year"], inplace=True)
 
         for station in stations:
