@@ -11,8 +11,6 @@ from Code.Models.models import models
 from Code.Prediction.Prediction import prediction
 from Code.Prediction.minMaxCoordinates import minMaxCoordinates
 
-#Dict with input file paths
-
 def setUp():
     """
     This function imports all needed hyperparameters and sets up the directories for output data
@@ -39,9 +37,10 @@ def setUp():
 
     #Construct directories for output data
     if os.path.isdir("Output") == False:
-        os.makedirs("Output/Datasets")
+        os.makedirs("Output/Dataset")
+        os.makedirs("Output/Results")
         os.makedirs("Output/Models")
-        os.makedirs("Output/Plots")
+        os.makedirs("Output/Visualizations")
 
     return input_dict, output_dict, params_dict, models_dict, pred_dict
 
@@ -61,27 +60,17 @@ def main():
         pbar.set_description(desc="Importing full dataset")
 
         #If dataset needs to be constructed
-        if params_dict["make_fullDF"]:
+        if params_dict["combine_data"]:
 
             #Construct full dataset
             constructDF(input_dict, output_dict, params_dict)
-
-            if params_dict["gen_borders"]:
-                #Import full dataset and set latitude and longitude borders for the custom sensor
-                full_df = pd.read_csv(output_dict["full_df"])
-                params_dict["lon_max"], params_dict["lon_min"], params_dict["lat_max"], params_dict["lat_min"] = minMaxCoordinates(
-                    full_df)
-
-                #Save the sensor borders in general parameters
-                with open("ParamSettings/HParams.txt", "w") as f:
-                    f.write(str(params_dict))
         
         #Update progess bar
         pbar.update(1)
         pbar.set_description(desc="Constructing models")
 
         #If models need to be constructed
-        if params_dict["make_models"]:
+        if params_dict["construct_models"]:
 
             #Construct models
             models(output_dict, params_dict, models_dict, pred_dict)
