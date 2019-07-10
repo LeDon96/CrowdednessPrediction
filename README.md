@@ -21,27 +21,28 @@ The predictions can be generated in two different forms:
 
 ## Usage
 - Clone or donwload the code
-- Set the [Hyperparameter Settings](../ParamSettings)
-    - [HParams.txt](../ParamSettings/HParams.txt): In this file the general hyperparameters can be set. These will affect all the scripts. 
+- Set the [Hyperparameter Settings](ParamSettings)
+    - [HParams.txt](ParamSettings/HParams.txt): In this file the general hyperparameters can be set. These will affect all the scripts. 
         - State whether the combined dataset is present
         - State whether the trained models are present
         - State which sensors and stations to use for the prediction and training
         - Which prediction method to use
         - Which classification and regression models to use. 
-    - [InputFilePaths.txt](../ParamSettings/InputFilePaths.txt): In this file the location of the needed import files can be set. 
-    - [OutputFilePaths.txt](../ParamSettings/OutputFilePaths.txt): In this file the location of the the output files can be set. It's advised to leave these settings unchanged, as the directories to dave the files are made by the code. 
-    - [ModelParams.txt](../ParamSettings/ModelParams.txt): In this file the model settings can be set. 
+    - [InputFilePaths.txt](ParamSettings/InputFilePaths.txt): In this file the location of the needed import files can be set. 
+    - [OutputFilePaths.txt](ParamSettings/OutputFilePaths.txt): In this file the location of the the output files can be set. It's advised to leave these settings unchanged, as the directories to dave the files are made by the code. 
+    - [ModelParams.txt](ParamSettings/ModelParams.txt): In this file the model settings can be set. 
         - The size of the training and evaluation split
         - Number of cross validations
         - Hyperparameter grid set of the models
-    - [PredParams.txt](../ParamSettings/PredParams.txt): In this file the prediction setttings can be set
+    - [PredParams.txt](ParamSettings/PredParams.txt): In this file the prediction setttings can be set
         - Prediction period 
         - Prediction model
         - What import data to use for the prediction model
 - Run [main.py](main.py)
     - The dataset only needs to be constructed if not present
     - The models only need to be constructed if not present 
-- Enjoy the given prediciton :) ![Output](Additional/OutputFile.PNG)
+- Enjoy the given prediciton :) 
+![Output](Additional/OutputFile.PNG)
 
 ## Code
 All the code can be run from the [main.py](main.py) file. The **Import** scripts only need to be run of the combined dataset is not present and the **Model** scripts only need top be run if the trained models are not present. This files calls on all the needed functions to do the following:

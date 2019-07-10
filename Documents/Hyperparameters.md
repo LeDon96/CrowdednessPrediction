@@ -1,7 +1,7 @@
 # Hyperparameter
 The files below contain the hyperparameter settings used by the scripts to generate the data. 
 
-## [General Hyperparameters](ParamSettings/HParams.txt)
+## [General Hyperparameters](../ParamSettings/HParams.txt)
 In the *HParams.txt* file code spanning all the scripts can be set. 
 - *Needed Sensors* (list): Which of the given sensors to include as ground truths in the prediction, given their data is present.
 - *gaww-02*/*gaww-03* (list): These include different names for the given sensors. This setting is specific to this project, due to data constraints and may be removed.
@@ -14,7 +14,7 @@ In the *HParams.txt* file code spanning all the scripts can be set.
 - *clas_models* (list): The classification models bound to the unique ID's present in this given list, are constructed in *make_models*.
 - *lon_low", *lon_high*, *lat_low*, *lat_high* (float): These are the coordinate borders for any custom coordinates to make predictions for generalization. This is also used for the events to find borders within the events are relevant. 
 
-## [Input File Locations](ParamSettings/InputFilePaths.txt)
+## [Input File Locations](../ParamSettings/InputFilePaths.txt)
 In *InputFilePaths.txt*, the paths to the input datafiles can be set.
 - *sensorData* (str): This file contains project specific ground truths of the crowdedness counts used in this project. Can be omitted from future use if file not present. 
 - *coordinateData* (str): This file contains the Longitude and Latitude of t=all the relevant sensors. 
@@ -23,7 +23,7 @@ In *InputFilePaths.txt*, the paths to the input datafiles can be set.
 - *deppData* (str): This file contains the number of passengers that depart at each station. 
 - *eventData* (str): This file contains the date and locations of all the events in Amsterdam. 
 
-## [Output File Locations](ParamSettings/OutputFilePaths.txt)
+## [Output File Locations](../ParamSettings/OutputFilePaths.txt)
 In *OutputFilePaths.txt*, the paths to ouput files can be set. Default, a new dir is constructed for this, so no need to change these. 
 - *lon_scaler* (model): Scaler model used for the Longitude.
 - *lat_scaler* (model): Scaler model used for the Latitude. 
@@ -37,7 +37,7 @@ In *OutputFilePaths.txt*, the paths to ouput files can be set. Default, a new di
 - *rfg_model*, *xgbr_model*, *rfc_model*, *xgbc_model*, *lr*, *dc* (str): Where the saved prediction models should be saved. 
 - *predictions* (str): Map where all the generated predictions should be saved. 
 
-## [Model Parameters](ParamSettings/ModelParams.txt)
+## [Model Parameters](../ParamSettings/ModelParams.txt)
 In *ModelParams.txt*, all the model specific settings can be edited. 
 - *trainTest* (float): Size of the train set
 - *KFold* (int): Number of cross-validations
@@ -46,7 +46,7 @@ In *ModelParams.txt*, all the model specific settings can be edited.
     - *cycles* (int): Number of cycles to do for Hyperparameter testing
     - *params* (dict): Which parameters to tune, with which options, during hyperparameter tuning
 
-## [Prediction Parameters](ParamSettings/PredParams.txt)
+## [Prediction Parameters](../ParamSettings/PredParams.txt)
 In *PredParams.txt*, the parameters for generating predictions can be set. 
 - *model* (str): Which model to use, to generate the predictions.
 - *start_date* (str): Start date of the predictions, in the following format --> 'YYYY-MM-DD'.
