@@ -26,7 +26,23 @@ The predictions can be generated in two different forms:
 
 ## Usage
 - Clone or donwload the code
-- Set the [Hyperparameter Settings](ParamSettings/)
+- Set the [Hyperparameter Settings](ParamSettings)
+    - [HParams.txt](ParamSettings/HParams.txt): In this file the general hyperparameters can be set. These will affect all the scripts. 
+        - State whether the combined dataset is present
+        - State whether the trained models are present
+        - State which sensors and stations to use for the prediction and training
+        - Which prediction method to use
+        - Which classification and regression models to use. 
+    - [InputFilePaths.txt](ParamSettings/InputFilePaths.txt): In this file the location of the needed import files can be set. 
+    - [OutputFilePaths.txt](ParamSettings/OutputFilePaths.txt): In this file the location of the the output files can be set. It's advised to leave these settings unchanged, as the directories to dave the files are made by the code. 
+    - [ModelParams.txt](ParamSettings/ModelParams.txt): In this file the model settings can be set. 
+        - The size of the training and evaluation split
+        - Number of cross validations
+        - Hyperparameter grid set of the models
+    - [PredParams.txt](ParamSettings/PredParams.txt): In this file the prediction setttings can be set
+        - Prediction period 
+        - Prediction model
+        - What import data to use for the prediction model
 - Run [main.py](main.py)
     - The dataset only needs to be constructed if not present
     - The models only need to be constructed if not present 
@@ -34,9 +50,23 @@ The predictions can be generated in two different forms:
 
 ## Code
 All the code can be run from the [main.py](main.py) file. This files calls on all the needed functions to do the following:
-- [Import the datasets](Code/ImportData/constructFullDataset.py)
-- [Construct models](Code/Models/models.py)
-- [Generate Predictions](Code/Prediction/Prediction.py)
-- [Jupyter Notebooks with some data exploration](Jupyter%20Notebooks)
+- [Import the datasets](Code/ImportData): Contains scripts to combine all the needed datasets into a single dataset
+    - [EventData.py](Code/ImportData/EventData.py): Script to import the event dataset
+    - [GVBData.py](Code/ImportData/GVBData.py): Script to import the GVB dataset
+    - [SensorData.py](Code/ImportData/SensorData.py) : Script to import the CMSA Sensor dataset
+    - [CombineData.py](Code/ImportData/CombineData.py): Script to combine all the given datasets into one
+    - [constructFullDataset.py](Code/ImportData/constructFullDataset.py): Script that calls all the above given scripts and returns the full dataset as CSV file. 
+- [Construct models](Code/Models): Contains scripts to train and save the prediction ML models
+    - [TrainTestSplit.py](Code/Models/TrainTestSplit.py): Script to split the dataset into a training set and evaluation set
+    - [Classification.py](Code/Models/Classification.py): Script to train and save the classification models 
+    - [Regression.py](Code/Models/Regression.py): Script to train and save the regression models
+    - [models.py](Code/Models/models.py): Script that calls on all the above given scripts and returns the evaluation metrics of all the models in CSV files. 
+- [Generate Predictions](Code/Prediction)
+    - [importModels.py](Code/Prediction/importModels.py): Script to import the prediction models and scalars needed to generate the predictions
+    - [GenerateData.py](Code/Prediction/GenerateData.py): Script to to generate data for unknown dates, based on known dates (experimental)
+    - [Prediction.py](Code/Prediction/Prediction.py): Script to generate predictions, which are returned in a CSV file. 
+
+## Additional
+[Jupyter Notebooks with some data exploration](Jupyter%20Notebooks)
 
 All the above steps need to be completed on the first run, afterwards, only step 3 needs to be done to generate the predictions. 
