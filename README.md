@@ -41,10 +41,10 @@ The predictions can be generated in two different forms:
 - Run [main.py](main.py)
     - The dataset only needs to be constructed if not present
     - The models only need to be constructed if not present 
-- Enjoy the given prediciton :) [Output](Additional/OutputFile.PNG)
+- Enjoy the given prediciton :) ![Output](Additional/OutputFile.PNG)
 
 ## Code
-All the code can be run from the [main.py](main.py) file. This files calls on all the needed functions to do the following:
+All the code can be run from the [main.py](main.py) file. The **Import** scripts only need to be run of the combined dataset is not present and the **Model** scripts only need top be run if the trained models are not present. This files calls on all the needed functions to do the following:
 - [Import the datasets](Code/ImportData): Contains scripts to combine all the needed datasets into a single dataset
     - [EventData.py](Code/ImportData/EventData.py): Script to import the event dataset
     - [GVBData.py](Code/ImportData/GVBData.py): Script to import the GVB dataset
@@ -71,5 +71,3 @@ All the code can be run from the [main.py](main.py) file. This files calls on al
 - [Data Explore](Jupyter%20Notebooks/Data%20Explore.ipynb): Data exploration of the given datasets
 - [Dataset Contents](Jupyter%20Notebooks/Dataset%Contents.ipynb): Explores the contents of input datasets
 - [Prediction Plots](Jupyter%20Notebooks/Prediction%Plots.ipynb): Plots of made predictions
-
-All the above steps need to be completed on the first run, afterwards, only step 3 needs to be done to generate the predictions. 
