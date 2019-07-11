@@ -9,7 +9,6 @@ from tqdm import tqdm
 from Code.ImportData.constructFullDataset import constructDF
 from Code.Models.models import models
 from Code.Prediction.Prediction import prediction
-from Code.Prediction.minMaxCoordinates import minMaxCoordinates
 
 def setUp():
     """

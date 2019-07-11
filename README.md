@@ -67,6 +67,9 @@ All the code can be run from the [main.py](main.py) file. The **Import** scripts
 - [Thesis Proposal](Documents/Thesis_Proposal_Crowdedness.pdf)
 - [Code Requirements](Documents/Requirements.md)
 - [Hyperparameter Settings Explanation](Documents/Hyperparameters.md)
+- [Presentatie Team Demo](Documents/Team%20Demo%20Presentatie.pdf): Minder technische presentatie project.
+- [Poster Demo Donderdag](Documents/Poster%20DemoDonderdag.pdf): Poster gepresenteerd gedurende demo donderdag over project (gezamenlijk met een ander project). 
+- [Thesis Defence Presentatie](Documents/Thesis%20Defence%20Presentatie.pdf): Technische presentatie project. 
 
 ## Jupyter Notebooks 
 - [Data Explore](Jupyter%20Notebooks/Data%20Explore.ipynb): Data exploration of the given datasets
