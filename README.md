@@ -41,6 +41,10 @@ The predictions can be generated in two different forms:
 - Run [main.py](main.py)
     - The dataset only needs to be constructed if not present
     - The models only need to be constructed if not present 
+    - The prediction can be generated with three different methods:
+        - **Combined Dataset**: Use the data from the combined dataset to generate predictions
+        - **Prediction pipeline**: Use the prediction pipeline to generate data close to the prediction dates (untested)
+        - **Generalized Dataset**: Use the dataset with a single sensor removed to generate generalized predictions
 - Enjoy the given prediciton :) 
 ![Output](Additional/OutputFile.PNG)
 
