@@ -76,6 +76,6 @@ All the code can be run from the [main.py](main.py) file. The **Import** scripts
 - [Thesis Defence Presentatie](Documents/Thesis%20Defence%20Presentatie.pdf): Technische presentatie project. 
 
 ## Jupyter Notebooks 
-- [Data Explore](Jupyter%20Notebooks/Data%20Explore.ipynb): Data exploration of the given datasets
-- [Dataset Contents](Jupyter%20Notebooks/Dataset%Contents.ipynb): Explores the contents of input datasets
-- [Prediction Plots](Jupyter%20Notebooks/Prediction%Plots.ipynb): Plots of made predictions
+- [Data Explore](Jupyter%20Notebooks/Data%20explore.ipynb): Data exploration of the given datasets
+- [Dataset Contents](Jupyter%20Notebooks/Dataset%20Contents.ipynb): Explores the contents of input datasets
+- [Prediction Plots](Jupyter%20Notebooks/Prediction%20Plots.ipynb): Plots of made predictions
